@@ -1,0 +1,48 @@
+{
+  "compilerOptions": {
+    /* Language & environment */
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+
+    /* Output */
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "removeComments": true,
+
+    /* Strict type-checking */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "useUnknownInCatchVariables": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": false,
+
+    /* Interop */
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+
+    /* Skip type-checking of node_modules */
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
+}

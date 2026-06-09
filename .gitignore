@@ -1,0 +1,26 @@
+# =============================================================================
+# AICryptoAdvisor — root .gitignore (strict)
+# Blocks secrets, dependencies, build artifacts, and OS junk from version control.
+# =============================================================================
+
+# --- Dependencies (root, client/, server/, and any nested workspace) ---
+node_modules/
+**/node_modules/
+
+# --- Compiled / build output ---
+dist/
+build/
+**/dist/
+**/build/
+
+# --- Environment & secrets (never commit API keys or DB connection strings) ---
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env.*.local
+
+# --- macOS ---
+.DS_Store
+**/.DS_Store
