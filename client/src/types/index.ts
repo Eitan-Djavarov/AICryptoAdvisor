@@ -9,7 +9,7 @@ export interface User {
 
 export type InvestorType = 'HODLer' | 'Day Trader' | 'NFT Collector';
 
-export type ContentType = 'Market News' | 'Charts' | 'Social' | 'Fun';
+export type ContentType = 'Market News' | 'Coin Prices' | 'AI Insights' | 'Fun';
 
 export type DashboardSectionId = 'news' | 'prices' | 'aiInsight' | 'meme';
 
@@ -92,6 +92,7 @@ export interface AssetSearchResponse {
 export interface CoinPriceData {
   symbol: string;
   name: string;
+  image: string;
   currentPrice: number;
   marketCap: number;
   priceChange24h: number;

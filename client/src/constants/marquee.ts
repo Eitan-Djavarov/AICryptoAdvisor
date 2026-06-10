@@ -12,6 +12,7 @@ export const FALLBACK_MARQUEE_TICKERS: CoinPriceData[] = [
   {
     symbol: 'BTC',
     name: 'Bitcoin',
+    image: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
     currentPrice: 67_420,
     marketCap: 0,
     priceChange24h: -1.2,
@@ -26,6 +27,7 @@ export const FALLBACK_MARQUEE_TICKERS: CoinPriceData[] = [
   {
     symbol: 'ETH',
     name: 'Ethereum',
+    image: 'https://assets.coingecko.com/coins/images/279/small/ethereum.png',
     currentPrice: 3_450,
     marketCap: 0,
     priceChange24h: 2.4,
@@ -40,6 +42,7 @@ export const FALLBACK_MARQUEE_TICKERS: CoinPriceData[] = [
   {
     symbol: 'SOL',
     name: 'Solana',
+    image: 'https://assets.coingecko.com/coins/images/4128/small/solana.png',
     currentPrice: 145,
     marketCap: 0,
     priceChange24h: 5.1,
@@ -54,6 +57,7 @@ export const FALLBACK_MARQUEE_TICKERS: CoinPriceData[] = [
   {
     symbol: 'BNB',
     name: 'BNB',
+    image: 'https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png',
     currentPrice: 580,
     marketCap: 0,
     priceChange24h: 0.3,
@@ -68,6 +72,7 @@ export const FALLBACK_MARQUEE_TICKERS: CoinPriceData[] = [
   {
     symbol: 'USDT',
     name: 'Tether',
+    image: 'https://assets.coingecko.com/coins/images/325/small/Tether.png',
     currentPrice: 1.0,
     marketCap: 0,
     priceChange24h: 0.01,

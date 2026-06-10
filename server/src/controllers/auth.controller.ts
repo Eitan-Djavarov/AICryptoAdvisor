@@ -216,14 +216,14 @@ export async function login(
     });
 
     if (!user) {
-      res.status(401).json({ success: false, message: 'Invalid email or password' });
+      res.status(401).json({ success: false, message: 'Invalid credentials' });
       return;
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.password);
 
-    if (!isPasswordValid) {
-      res.status(401).json({ success: false, message: 'Invalid email or password' });
+    if (!isMatch) {
+      res.status(401).json({ success: false, message: 'Invalid credentials' });
       return;
     }
 

@@ -26,7 +26,7 @@ export const prisma = new PrismaClient({ adapter });
 export async function connectDB(): Promise<void> {
   try {
     await prisma.$connect();
-    console.log('🟢 SQLite Database via Prisma Connected Successfully');
+    console.log(' SQLite Database via Prisma Connected Successfully');
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'Unknown database connection error';

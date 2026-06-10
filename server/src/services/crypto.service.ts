@@ -51,9 +51,40 @@ interface CoinGeckoMarketRow {
   id: string;
   symbol: string;
   name: string;
+  image: string;
   current_price: number;
   market_cap: number;
   price_change_percentage_24h: number;
+}
+
+const SYMBOL_TO_ICON_IMAGE = {
+  BTC: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
+  ETH: 'https://assets.coingecko.com/coins/images/279/small/ethereum.png',
+  SOL: 'https://assets.coingecko.com/coins/images/4128/small/solana.png',
+  BNB: 'https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png',
+  XRP: 'https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png',
+  ADA: 'https://assets.coingecko.com/coins/images/975/small/cardano.png',
+  DOGE: 'https://assets.coingecko.com/coins/images/5/small/dogecoin.png',
+  AVAX: 'https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png',
+  DOT: 'https://assets.coingecko.com/coins/images/12171/small/polkadot.png',
+  MATIC: 'https://assets.coingecko.com/coins/images/4713/small/polygon.png',
+  LINK: 'https://assets.coingecko.com/coins/images/877/small/chainlink-new-logo.png',
+  UNI: 'https://assets.coingecko.com/coins/images/12504/small/uniswap-logo.png',
+  ATOM: 'https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png',
+  LTC: 'https://assets.coingecko.com/coins/images/2/small/litecoin.png',
+  NEAR: 'https://assets.coingecko.com/coins/images/10365/small/near.jpg',
+  SHIB: 'https://assets.coingecko.com/coins/images/11939/small/shiba.png',
+  USDT: 'https://assets.coingecko.com/coins/images/325/small/Tether.png',
+} as const satisfies Record<string, string>;
+
+function resolveCoinImage(symbol: string, image?: string): string {
+  const normalized = normalizeAssetSymbol(symbol);
+
+  if (image?.trim()) {
+    return image.trim();
+  }
+
+  return SYMBOL_TO_ICON_IMAGE[normalized as keyof typeof SYMBOL_TO_ICON_IMAGE] ?? '';
 }
 
 interface CryptoPanicPost {
@@ -79,6 +110,7 @@ const FALLBACK_PRICES_RAW: CoinPriceCore[] = [
   {
     symbol: 'BTC',
     name: 'Bitcoin',
+    image: SYMBOL_TO_ICON_IMAGE.BTC,
     currentPrice: 67_420,
     marketCap: 1_320_000_000_000,
     priceChange24h: 1.85,
@@ -88,6 +120,7 @@ const FALLBACK_PRICES_RAW: CoinPriceCore[] = [
   {
     symbol: 'ETH',
     name: 'Ethereum',
+    image: SYMBOL_TO_ICON_IMAGE.ETH,
     currentPrice: 3_540,
     marketCap: 425_000_000_000,
     priceChange24h: -0.42,
@@ -97,6 +130,7 @@ const FALLBACK_PRICES_RAW: CoinPriceCore[] = [
   {
     symbol: 'SOL',
     name: 'Solana',
+    image: SYMBOL_TO_ICON_IMAGE.SOL,
     currentPrice: 148.25,
     marketCap: 68_500_000_000,
     priceChange24h: 3.12,
@@ -106,6 +140,7 @@ const FALLBACK_PRICES_RAW: CoinPriceCore[] = [
   {
     symbol: 'BNB',
     name: 'BNB',
+    image: SYMBOL_TO_ICON_IMAGE.BNB,
     currentPrice: 592.1,
     marketCap: 86_200_000_000,
     priceChange24h: 0.76,
@@ -115,6 +150,7 @@ const FALLBACK_PRICES_RAW: CoinPriceCore[] = [
   {
     symbol: 'XRP',
     name: 'XRP',
+    image: SYMBOL_TO_ICON_IMAGE.XRP,
     currentPrice: 0.62,
     marketCap: 34_100_000_000,
     priceChange24h: -1.15,
@@ -124,6 +160,7 @@ const FALLBACK_PRICES_RAW: CoinPriceCore[] = [
   {
     symbol: 'USDT',
     name: 'Tether',
+    image: SYMBOL_TO_ICON_IMAGE.USDT,
     currentPrice: 1.0,
     marketCap: 95_000_000_000,
     priceChange24h: 0.01,
@@ -243,9 +280,12 @@ function resolveCoinGeckoIds(assets: string[]): string[] {
 }
 
 function mapGeckoRowToPrice(row: CoinGeckoMarketRow): CoinPriceData {
+  const symbol = row.symbol.toUpperCase();
+
   return enrichCoinPriceData({
-    symbol: row.symbol.toUpperCase(),
+    symbol,
     name: row.name,
+    image: resolveCoinImage(symbol, row.image),
     currentPrice: row.current_price,
     marketCap: row.market_cap,
     priceChange24h: row.price_change_percentage_24h,
@@ -269,6 +309,7 @@ function buildFallbackPriceRow(symbol: string): CoinPriceData {
   return enrichCoinPriceData({
     symbol: normalized,
     name: SYMBOL_DISPLAY_NAMES[normalized] ?? normalized,
+    image: resolveCoinImage(normalized),
     currentPrice: 0,
     marketCap: 0,
     priceChange24h: 0,

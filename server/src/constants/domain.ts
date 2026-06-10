@@ -17,11 +17,17 @@ export type InvestorType = (typeof INVESTOR_TYPES)[number];
 
 export const CONTENT_TYPES = [
   'Market News',
-  'Charts',
-  'Social',
+  'Coin Prices',
+  'AI Insights',
   'Fun',
 ] as const;
 export type ContentType = (typeof CONTENT_TYPES)[number];
+
+/** Legacy onboarding values stored before content-type rename. */
+export const LEGACY_CONTENT_TYPE_ALIASES: Record<string, ContentType> = {
+  Charts: 'Coin Prices',
+  Social: 'AI Insights',
+};
 
 export const FEEDBACK_SECTIONS = [
   'ai_insight',

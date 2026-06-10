@@ -153,10 +153,10 @@ export function invalidatePriceCache(): void {
   priceRefreshInflight.clear();
 }
 
-export function getDashboardAIInsight(
+export async function getDashboardAIInsight(
   investorType: string,
   assets: string[]
-): AIInsightResult {
+): Promise<AIInsightResult> {
   const key = buildAiCacheKey(investorType, assets);
   const cached = aiCache.get(key);
 
@@ -167,6 +167,18 @@ export function getDashboardAIInsight(
     return cached.data;
   }
 
-  scheduleAiRefresh(key, investorType, assets);
-  return getFallbackAIInsight(investorType, assets);
+  try {
+    const data = await fetchAIInsight(investorType, assets);
+    aiCache.set(key, {
+      data,
+      expiresAt: Date.now() + AI_TTL_MS,
+    });
+    return data;
+  } catch (error) {
+    console.warn(
+      '[DashboardCache] Live AI insight fetch failed, using fallback:',
+      error
+    );
+    return getFallbackAIInsight(investorType, assets);
+  }
 }

@@ -146,10 +146,10 @@ export default function DashboardPage() {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/login', { replace: true });
   };
 
-  if (loading) {
+  if (loading && !dashboard) {
     return (
       <DashboardLayout>
         <DashboardSkeleton
@@ -219,11 +219,20 @@ export default function DashboardPage() {
                     key={`${coin.symbol}-${coin.name}`}
                     className="card-interactive flex items-center justify-start gap-x-6 rounded-lg border border-zinc-800 bg-zinc-950 px-4 py-3"
                   >
-                    <div className="min-w-[4.5rem] shrink-0">
-                      <p className="font-semibold tracking-tight text-zinc-100">
-                        {coin.symbol}
-                      </p>
-                      <p className="mt-0.5 text-xs text-zinc-500">{coin.name}</p>
+                    <div className="flex min-w-[5.5rem] shrink-0 items-center gap-2.5">
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full border border-zinc-800 bg-zinc-900">
+                        <img
+                          src={coin.image}
+                          alt={coin.name}
+                          className="h-5 w-5 object-contain"
+                        />
+                      </div>
+                      <div>
+                        <p className="font-semibold tracking-tight text-zinc-100">
+                          {coin.symbol}
+                        </p>
+                        <p className="mt-0.5 text-xs text-zinc-500">{coin.name}</p>
+                      </div>
                     </div>
 
                     <div className="shrink-0">
@@ -356,23 +365,35 @@ export default function DashboardPage() {
             </div>
 
             <div className="relative rounded-lg border border-zinc-800 bg-zinc-950/60 px-5 py-5">
-              <p className="text-base leading-relaxed text-zinc-300">
-                {aiInsight.insight}
-              </p>
-              <div className="mt-5 flex flex-wrap items-end justify-between gap-3">
-                <div className="flex flex-wrap gap-2 text-xs text-zinc-600">
-                  <span className="rounded-md border border-zinc-800 bg-zinc-950 px-2.5 py-1">
-                    {aiInsight.model}
-                  </span>
-                  <span className="rounded-md border border-zinc-800 bg-zinc-950 px-2.5 py-1">
-                    {aiInsight.source === 'fallback' ? 'cached brief' : 'live brief'}
-                  </span>
+              {loading ? (
+                <div className="relative flex animate-pulse flex-col items-center justify-center py-10 text-center">
+                  <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-zinc-700 border-t-emerald-400" />
+                  <p className="max-w-md text-sm leading-relaxed text-zinc-500">
+                    AI Advisor is analyzing market sentiment... Fetching latest live
+                    data from OpenRouter
+                  </p>
                 </div>
-                <FeedbackButtons
-                  section="ai_insight"
-                  contentId={aiInsight.contentId}
-                />
-              </div>
+              ) : (
+                <>
+                  <p className="text-base leading-relaxed text-zinc-300">
+                    {aiInsight.insight}
+                  </p>
+                  <div className="mt-5 flex flex-wrap items-end justify-between gap-3">
+                    <div className="flex flex-wrap gap-2 text-xs text-zinc-600">
+                      <span className="rounded-md border border-zinc-800 bg-zinc-950 px-2.5 py-1">
+                        {aiInsight.model}
+                      </span>
+                      <span className="rounded-md border border-zinc-800 bg-zinc-950 px-2.5 py-1">
+                        {aiInsight.source === 'fallback' ? 'cached brief' : 'live brief'}
+                      </span>
+                    </div>
+                    <FeedbackButtons
+                      section="ai_insight"
+                      contentId={aiInsight.contentId}
+                    />
+                  </div>
+                </>
+              )}
             </div>
           </>
         );

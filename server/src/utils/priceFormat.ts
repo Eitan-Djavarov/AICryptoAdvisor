@@ -1,6 +1,7 @@
 export interface CoinPriceCore {
   symbol: string;
   name: string;
+  image: string;
   currentPrice: number;
   marketCap: number;
   priceChange24h: number;

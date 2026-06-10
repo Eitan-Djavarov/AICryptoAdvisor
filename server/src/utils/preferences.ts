@@ -1,4 +1,16 @@
-import type { ContentType } from '../constants/domain';
+import {
+  CONTENT_TYPES,
+  LEGACY_CONTENT_TYPE_ALIASES,
+  type ContentType,
+} from '../constants/domain';
+
+function normalizeContentType(value: string): ContentType | null {
+  if ((CONTENT_TYPES as readonly string[]).includes(value)) {
+    return value as ContentType;
+  }
+
+  return LEGACY_CONTENT_TYPE_ALIASES[value] ?? null;
+}
 
 export function serializeStringArray(values: string[]): string {
   return values.join(',');
@@ -29,6 +41,8 @@ export function parseStoredPreferences(
   return {
     cryptoAssets: parseStringArray(cryptoAssets),
     investorType,
-    contentTypes: parseStringArray(contentTypes) as ContentType[],
+    contentTypes: parseStringArray(contentTypes)
+      .map(normalizeContentType)
+      .filter((type): type is ContentType => type !== null),
   };
 }

@@ -17,9 +17,9 @@ export interface DashboardLayoutSection {
 }
 
 const CONTENT_TYPE_TO_SECTION: Record<ContentType, DashboardSectionId> = {
-  Charts: 'prices',
+  'Coin Prices': 'prices',
   'Market News': 'news',
-  Social: 'aiInsight',
+  'AI Insights': 'aiInsight',
   Fun: 'meme',
 };
 

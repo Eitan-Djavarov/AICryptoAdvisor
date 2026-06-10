@@ -37,14 +37,14 @@ export const CONTENT_TYPE_OPTIONS: Array<{
     description: 'Headlines, catalysts, and macro developments.',
   },
   {
-    value: 'Charts',
-    title: 'Charts',
-    description: 'Price action, levels, and technical context.',
+    value: 'Coin Prices',
+    title: 'Coin Prices',
+    description: 'Live tickers, price action, and market caps for your watchlist.',
   },
   {
-    value: 'Social',
-    title: 'Social',
-    description: 'Community sentiment and trending narratives.',
+    value: 'AI Insights',
+    title: 'AI Insights',
+    description: 'Daily AI brief tailored to your investor profile.',
   },
   {
     value: 'Fun',

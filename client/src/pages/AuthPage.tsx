@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -7,17 +8,23 @@ type AuthTab = 'login' | 'signup';
 
 export default function AuthPage() {
   const navigate = useNavigate();
-  const { login, register, isAuthenticated, onboardingCompleted, loading } =
-    useAuth();
+  const {
+    login,
+    register,
+    isAuthenticated,
+    onboardingCompleted,
+    loading: authLoading,
+  } = useAuth();
 
   const [activeTab, setActiveTab] = useState<AuthTab>('login');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-zinc-950 px-6">
         <LoadingSpinner label="Verifying your session..." size="lg" />
@@ -52,7 +59,7 @@ export default function AuthPage() {
       return;
     }
 
-    setSubmitting(true);
+    setLoading(true);
 
     try {
       const authenticatedUser =
@@ -70,7 +77,7 @@ export default function AuthPage() {
           : 'Something went wrong. Please try again.'
       );
     } finally {
-      setSubmitting(false);
+      setLoading(false);
     }
   };
 
@@ -172,17 +179,31 @@ export default function AuthPage() {
               >
                 Password
               </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder="Minimum 8 characters"
-                className="input-field w-full rounded-lg px-4 py-3 text-sm"
-                autoComplete={
-                  activeTab === 'login' ? 'current-password' : 'new-password'
-                }
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder="Minimum 8 characters"
+                  className="input-field w-full rounded-lg px-4 py-3 pr-11 text-sm"
+                  autoComplete={
+                    activeTab === 'login' ? 'current-password' : 'new-password'
+                  }
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((current) => !current)}
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-zinc-500 transition-colors hover:text-zinc-300"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" aria-hidden="true" />
+                  ) : (
+                    <Eye className="h-4 w-4" aria-hidden="true" />
+                  )}
+                </button>
+              </div>
             </div>
 
             {error ? (
@@ -193,15 +214,13 @@ export default function AuthPage() {
 
             <button
               type="submit"
-              disabled={submitting}
-              className="btn-primary flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium"
+              disabled={loading}
+              className="btn-primary flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {submitting ? (
+              {loading ? (
                 <>
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-400/30 border-t-zinc-950" />
-                  {activeTab === 'login'
-                    ? 'Signing in...'
-                    : 'Creating account...'}
+                  Please wait...
                 </>
               ) : activeTab === 'login' ? (
                 'Enter Terminal'
