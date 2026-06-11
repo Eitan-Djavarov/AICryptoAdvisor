@@ -40,7 +40,7 @@ const LOCAL_MEME_LIBRARY: LocalMemeEntry[] = [
       'Zooming out so far that the chart is now technically a flat line of acceptance.',
   },
   {
-    title: 'Wen Moon',
+    title: 'Sir, This Is a Casino',
     fallbackQuote:
       'The moon mission keeps getting delayed but the fuel budget keeps shrinking.',
   },
@@ -70,7 +70,7 @@ const LOCAL_MEME_LIBRARY: LocalMemeEntry[] = [
       'I am not a financial advisor, which is why I trust myself with my entire net worth.',
   },
   {
-    title: 'Whale Watching',
+    title: 'Crypto Life',
     fallbackQuote:
       'A whale moved 2,000 BTC and my tiny bag suddenly felt the entire ocean shift.',
   },
@@ -90,7 +90,7 @@ const LOCAL_MEME_LIBRARY: LocalMemeEntry[] = [
       'In a bull market everyone is a genius, and I am the smartest person in the room until October.',
   },
   {
-    title: 'Bear Market Wisdom',
+    title: 'Life Principle',
     fallbackQuote:
       'Bear markets are when fortunes are made, says the guy who is currently down bad.',
   },
@@ -105,7 +105,7 @@ const LOCAL_MEME_LIBRARY: LocalMemeEntry[] = [
       'Dollar cost averaging into a bag so heavy it has its own gravitational field.',
   },
   {
-    title: 'Sir, This Is a Casino',
+    title: 'Reality Check',
     fallbackQuote:
       'I told myself this was disciplined investing right up until I aped into a dog coin.',
   },
