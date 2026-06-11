@@ -9,6 +9,8 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
+    // Production: set DATABASE_URL=file:/data/prod.db (persistent volume mount).
+    // Development: DATABASE_URL=file:./dev.db (see .env.example).
     url: process.env["DATABASE_URL"],
   },
 });
