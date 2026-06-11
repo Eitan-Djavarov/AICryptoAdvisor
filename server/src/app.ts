@@ -1,16 +1,29 @@
 import express, { Application } from 'express';
-import cors from 'cors';
+import cors, { type CorsOptions } from 'cors';
 import routes from './routes';
 import { errorHandler } from './middlewares/errorHandler';
 
 const app: Application = express();
 
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL ?? 'http://localhost:5173',
-    credentials: true,
-  })
-);
+const ALLOWED_ORIGINS = [
+  'http://localhost:5173',
+  'https://ai-crypto-advisor-client.vercel.app',
+  process.env.CLIENT_URL,
+].filter((origin): origin is string => Boolean(origin));
+
+const corsOptions: CorsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error(`Origin ${origin} is not allowed by CORS`));
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
