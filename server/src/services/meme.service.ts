@@ -1,65 +1,148 @@
-import axios, { isAxiosError } from 'axios';
-import {
-  buildLocalFallbackMeme,
-  buildRedditMemeResult,
-  parseRedditMemes,
-  type CryptoMemeResult,
-  type RedditListingResponse,
-} from '../mappers/meme.mapper';
 import { pickRandomItem } from '../utils/random';
 
-export type { CryptoMemeResult } from '../mappers/meme.mapper';
+export interface CryptoMemeResult {
+  id: string;
+  title: string;
+  url: string;
+  source: 'reddit' | 'fallback';
+  fallbackQuote: string;
+}
 
-const REDDIT_MEME_URL =
-  'https://www.reddit.com/r/cryptocurrencymemes/hot.json?limit=30';
-const REQUEST_TIMEOUT_MS = 8_000;
+interface LocalMemeEntry {
+  title: string;
+  fallbackQuote: string;
+}
 
-const REDDIT_USER_AGENT =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 AICryptoAdvisor/1.0.0';
+const LOCAL_MEME_LIBRARY: LocalMemeEntry[] = [
+  {
+    title: 'HODL Through the Pain',
+    fallbackQuote:
+      'Diamond hands are just paper hands that ran out of options at the worst possible time.',
+  },
+  {
+    title: 'Buy High, Sell Low',
+    fallbackQuote:
+      'My portfolio strategy is simple: maximum confidence at the top, maximum despair at the bottom.',
+  },
+  {
+    title: 'When Lambo?',
+    fallbackQuote:
+      'Still riding the bus, but emotionally I have already parked the Lambo in the garage.',
+  },
+  {
+    title: 'Gas Fees Did Me Dirty',
+    fallbackQuote:
+      'Sent $20 of ETH, paid $43 in gas, and received a valuable lesson instead.',
+  },
+  {
+    title: 'This Is Fine (Down 80%)',
+    fallbackQuote:
+      'Zooming out so far that the chart is now technically a flat line of acceptance.',
+  },
+  {
+    title: 'Wen Moon',
+    fallbackQuote:
+      'The moon mission keeps getting delayed but the fuel budget keeps shrinking.',
+  },
+  {
+    title: 'Stablecoin Trust Issues',
+    fallbackQuote:
+      'It is called a stablecoin until the day it teaches you the meaning of volatility.',
+  },
+  {
+    title: 'Leverage Speedrun',
+    fallbackQuote:
+      'Opened 50x leverage to get rich quick and got liquidated even quicker.',
+  },
+  {
+    title: 'Refreshing the Charts Again',
+    fallbackQuote:
+      'Checked the price 400 times today. It did not move, but my anxiety sure did.',
+  },
+  {
+    title: 'The Dip Keeps Dipping',
+    fallbackQuote:
+      'I bought the dip. Then the dip bought a dip. Now we are all dipping together.',
+  },
+  {
+    title: 'Not Financial Advice',
+    fallbackQuote:
+      'I am not a financial advisor, which is why I trust myself with my entire net worth.',
+  },
+  {
+    title: 'Whale Watching',
+    fallbackQuote:
+      'A whale moved 2,000 BTC and my tiny bag suddenly felt the entire ocean shift.',
+  },
+  {
+    title: 'Airdrop Farming Life',
+    fallbackQuote:
+      'Bridged to nine chains, clicked a thousand buttons, and earned a coupon for emotional damage.',
+  },
+  {
+    title: 'Rug Pull Survivor',
+    fallbackQuote:
+      'The roadmap was beautiful, the team was anonymous, and the liquidity was imaginary.',
+  },
+  {
+    title: 'Bull Market Genius',
+    fallbackQuote:
+      'In a bull market everyone is a genius, and I am the smartest person in the room until October.',
+  },
+  {
+    title: 'Bear Market Wisdom',
+    fallbackQuote:
+      'Bear markets are when fortunes are made, says the guy who is currently down bad.',
+  },
+  {
+    title: 'My Two Tokens',
+    fallbackQuote:
+      'Diversified my portfolio across two coins that both crashed at exactly the same time.',
+  },
+  {
+    title: 'DCA Forever',
+    fallbackQuote:
+      'Dollar cost averaging into a bag so heavy it has its own gravitational field.',
+  },
+  {
+    title: 'Sir, This Is a Casino',
+    fallbackQuote:
+      'I told myself this was disciplined investing right up until I aped into a dog coin.',
+  },
+  {
+    title: 'Cold Wallet, Warm Heart',
+    fallbackQuote:
+      'Wrote my seed phrase on paper, hid it so well that even I cannot find it now.',
+  },
+  {
+    title: 'Green Candle Euphoria',
+    fallbackQuote:
+      'One green candle and suddenly I am planning early retirement and a yacht name.',
+  },
+  {
+    title: 'Red Candle Reality',
+    fallbackQuote:
+      'One red candle and the yacht is now a kayak I am renting by the hour.',
+  },
+  {
+    title: 'To the Moon, Eventually',
+    fallbackQuote:
+      'Long term I am extremely bullish. Short term I am extremely not okay.',
+  },
+];
 
-const REDDIT_REQUEST_HEADERS = {
-  'User-Agent': REDDIT_USER_AGENT,
-  Accept: 'application/json, text/plain, */*',
-  'Accept-Language': 'en-US,en;q=0.9',
-};
+const LOCAL_MEMES: CryptoMemeResult[] = LOCAL_MEME_LIBRARY.map((entry, index) => {
+  const assetNumber = index + 1;
 
-const REDDIT_FALLBACK_WARN_MESSAGE =
-  'Reddit fetch failed, using internal fallback...';
+  return {
+    id: `meme-${assetNumber}`,
+    title: entry.title,
+    url: `/memes/meme${assetNumber}.png`,
+    source: 'reddit',
+    fallbackQuote: entry.fallbackQuote,
+  };
+});
 
 export async function fetchCryptoMeme(): Promise<CryptoMemeResult> {
-  try {
-    const { data, status } = await axios.get<RedditListingResponse>(
-      REDDIT_MEME_URL,
-      {
-        timeout: REQUEST_TIMEOUT_MS,
-        headers: REDDIT_REQUEST_HEADERS,
-      }
-    );
-
-    const redditMemes = parseRedditMemes(data);
-
-    if (redditMemes.length === 0) {
-      console.warn(REDDIT_FALLBACK_WARN_MESSAGE);
-      return buildLocalFallbackMeme();
-    }
-
-    console.info(
-      `[Meme] Reddit fetch succeeded (HTTP ${status}) — ${redditMemes.length} image posts parsed (preview/url/thumbnail)`
-    );
-
-    return buildRedditMemeResult(pickRandomItem(redditMemes));
-  } catch (error) {
-    console.warn(REDDIT_FALLBACK_WARN_MESSAGE);
-
-    if (isAxiosError(error)) {
-      console.warn('[Meme] Reddit error detail', {
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        message: error.message,
-        code: error.code,
-      });
-    }
-
-    return buildLocalFallbackMeme();
-  }
+  return pickRandomItem(LOCAL_MEMES);
 }

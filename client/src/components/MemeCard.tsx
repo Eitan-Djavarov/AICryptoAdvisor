@@ -9,6 +9,10 @@ interface MemeCardProps {
   fallbackQuote: string;
 }
 
+function isLocalMemeAsset(url: string, source: MemeCardProps['source']): boolean {
+  return source === 'reddit' && url.startsWith('/memes/');
+}
+
 function MemeCard({
   id,
   url,
@@ -18,6 +22,7 @@ function MemeCard({
 }: MemeCardProps) {
   const [imageFailed, setImageFailed] = useState(false);
   const isFallbackAsset = source === 'fallback';
+  const isLocalMeme = isLocalMemeAsset(url, source);
 
   useEffect(() => {
     setImageFailed(false);
@@ -48,24 +53,34 @@ function MemeCard({
 
   return (
     <div className="overflow-hidden rounded-lg border border-zinc-800/80 bg-zinc-900/60 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/20">
-      <img
-        src={url}
-        alt={title}
-        className={
-          isFallbackAsset
-            ? 'h-48 max-h-48 w-full rounded-lg bg-zinc-950/40 object-contain p-4'
-            : 'h-56 w-full object-cover sm:h-72 md:h-80'
-        }
-        loading="lazy"
-        onError={() => setImageFailed(true)}
-      />
+      {isLocalMeme ? (
+        <div className="overflow-hidden rounded-t-lg border-b border-zinc-800 bg-zinc-950">
+          <img
+            src={url}
+            alt={title}
+            className="h-80 w-full object-contain"
+            loading="lazy"
+            onError={() => setImageFailed(true)}
+          />
+        </div>
+      ) : (
+        <img
+          src={url}
+          alt={title}
+          className={
+            isFallbackAsset
+              ? 'h-48 max-h-48 w-full rounded-lg bg-zinc-950/40 object-contain p-4'
+              : 'h-56 w-full object-cover sm:h-72 md:h-80'
+          }
+          loading="lazy"
+          onError={() => setImageFailed(true)}
+        />
+      )}
+
       <div className="flex items-start justify-between gap-3 border-t border-zinc-800 px-5 py-4">
         <div>
           <p className="font-medium tracking-tight text-zinc-200">{title}</p>
-          <p className="mt-1 text-xs text-zinc-600">
-            Source:{' '}
-            {source === 'reddit' ? 'r/cryptocurrencymemes' : 'curated vault'}
-          </p>
+          
         </div>
         <FeedbackButtons section="meme" contentId={id} />
       </div>
