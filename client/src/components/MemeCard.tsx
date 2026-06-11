@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import FeedbackButtons from './FeedbackButtons';
 
 interface MemeCardProps {
@@ -9,7 +9,7 @@ interface MemeCardProps {
   fallbackQuote: string;
 }
 
-export default function MemeCard({
+function MemeCard({
   id,
   url,
   title,
@@ -72,3 +72,5 @@ export default function MemeCard({
     </div>
   );
 }
+
+export default memo(MemeCard);

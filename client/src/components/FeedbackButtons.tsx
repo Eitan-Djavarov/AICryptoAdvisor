@@ -1,4 +1,4 @@
-import { useState, type MouseEvent } from 'react';
+import { memo, useState, type MouseEvent } from 'react';
 import { api } from '../services/api';
 import type { FeedbackApiSection, FeedbackType } from '../types';
 
@@ -78,7 +78,7 @@ async function submitFeedback(
   }
 }
 
-export default function FeedbackButtons({
+function FeedbackButtons({
   section,
   contentId,
   variant = 'default',
@@ -132,3 +132,5 @@ export default function FeedbackButtons({
     </div>
   );
 }
+
+export default memo(FeedbackButtons);

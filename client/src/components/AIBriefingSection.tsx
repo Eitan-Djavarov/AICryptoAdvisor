@@ -1,10 +1,10 @@
+import { memo } from 'react';
 import FeedbackButtons from './FeedbackButtons';
 import type { AIInsightResult } from '../types';
 
 export interface AIBriefingSectionProps {
   aiInsight: AIInsightResult;
   calibratedLabel: string;
-  loading: boolean;
 }
 
 function SparklesIcon() {
@@ -20,10 +20,9 @@ function SparklesIcon() {
   );
 }
 
-export default function AIBriefingSection({
+function AIBriefingSection({
   aiInsight,
   calibratedLabel,
-  loading,
 }: AIBriefingSectionProps) {
   return (
     <>
@@ -39,36 +38,26 @@ export default function AIBriefingSection({
       </div>
 
       <div className="relative rounded-lg border border-zinc-800 bg-zinc-950/60 px-5 py-5">
-        {loading ? (
-          <div className="relative flex animate-pulse flex-col items-center justify-center py-10 text-center">
-            <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-zinc-700 border-t-emerald-400" />
-            <p className="max-w-md text-sm leading-relaxed text-zinc-500">
-              AI Advisor is analyzing market sentiment... Fetching latest live
-              data from OpenRouter
-            </p>
+        <p className="text-base leading-relaxed text-zinc-300">
+          {aiInsight.insight}
+        </p>
+        <div className="mt-5 flex flex-wrap items-end justify-between gap-3">
+          <div className="flex flex-wrap gap-2 text-xs text-zinc-600">
+            <span className="rounded-md border border-zinc-800 bg-zinc-950 px-2.5 py-1">
+              {aiInsight.model}
+            </span>
+            <span className="rounded-md border border-zinc-800 bg-zinc-950 px-2.5 py-1">
+              {aiInsight.source === 'fallback' ? 'cached brief' : 'live brief'}
+            </span>
           </div>
-        ) : (
-          <>
-            <p className="text-base leading-relaxed text-zinc-300">
-              {aiInsight.insight}
-            </p>
-            <div className="mt-5 flex flex-wrap items-end justify-between gap-3">
-              <div className="flex flex-wrap gap-2 text-xs text-zinc-600">
-                <span className="rounded-md border border-zinc-800 bg-zinc-950 px-2.5 py-1">
-                  {aiInsight.model}
-                </span>
-                <span className="rounded-md border border-zinc-800 bg-zinc-950 px-2.5 py-1">
-                  {aiInsight.source === 'fallback' ? 'cached brief' : 'live brief'}
-                </span>
-              </div>
-              <FeedbackButtons
-                section="ai_insight"
-                contentId={aiInsight.contentId}
-              />
-            </div>
-          </>
-        )}
+          <FeedbackButtons
+            section="ai_insight"
+            contentId={aiInsight.contentId}
+          />
+        </div>
       </div>
     </>
   );
 }
+
+export default memo(AIBriefingSection);

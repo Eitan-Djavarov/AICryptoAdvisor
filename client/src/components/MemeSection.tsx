@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import MemeCard from './MemeCard';
 import type { CryptoMemeResult } from '../types';
 
@@ -5,7 +6,7 @@ export interface MemeSectionProps {
   meme: CryptoMemeResult;
 }
 
-export default function MemeSection({ meme }: MemeSectionProps) {
+function MemeSection({ meme }: MemeSectionProps) {
   return (
     <>
       <div className="mb-6">
@@ -30,3 +31,5 @@ export default function MemeSection({ meme }: MemeSectionProps) {
     </>
   );
 }
+
+export default memo(MemeSection);
