@@ -10,7 +10,7 @@ interface MemeCardProps {
 }
 
 function isLocalMemeAsset(url: string, source: MemeCardProps['source']): boolean {
-  return source === 'reddit' && url.startsWith('/memes/');
+  return source === 'reddit' && url.includes('/memes/');
 }
 
 function MemeCard({
