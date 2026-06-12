@@ -108,6 +108,8 @@ export default function AuthPage() {
               onClick={() => {
                 setActiveTab('login');
                 setError('');
+                setPassword('');
+                setName('');
               }}
               className={`btn-interactive px-4 py-4 text-sm font-medium transition-all duration-300 ease-out ${
                 activeTab === 'login'
@@ -122,6 +124,8 @@ export default function AuthPage() {
               onClick={() => {
                 setActiveTab('signup');
                 setError('');
+                setPassword('');
+                setName('');
               }}
               className={`btn-interactive px-4 py-4 text-sm font-medium transition-all duration-300 ease-out ${
                 activeTab === 'signup'

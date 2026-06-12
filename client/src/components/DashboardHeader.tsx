@@ -27,10 +27,10 @@ export default function DashboardHeader({
   onLogout,
 }: DashboardHeaderProps) {
   return (
-    <header className="border-b border-zinc-800/80 bg-black/80 backdrop-blur-md">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-6 px-6 py-8 sm:grid-cols-[1fr_auto_1fr] lg:px-8">
-        <div className="min-w-0 justify-self-start">
-          <div className="flex items-center gap-3">
+    <header className="border-b border-zinc-800/80 bg-zinc-950/50 backdrop-blur-md">
+      <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-6 py-4 sm:flex-row sm:justify-between lg:px-8">
+        <div className="min-w-0 text-center sm:text-left">
+          <div className="flex items-center justify-center gap-3 sm:justify-start">
             <div
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-zinc-800 bg-zinc-900 font-mono text-base font-bold text-zinc-400 shadow-sm"
               aria-hidden="true"
@@ -41,19 +41,19 @@ export default function DashboardHeader({
               {profileMeta.welcomeMessage}
             </p>
           </div>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-zinc-50 sm:text-3xl">
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-zinc-50 sm:text-3xl">
             {profileMeta.terminalTitle}
           </h1>
-          <span className="mt-3 inline-flex rounded-md border border-emerald-500/20 bg-zinc-900/60 px-3 py-1 text-xs font-medium tracking-wide text-emerald-400/90 backdrop-blur-sm">
+          <span className="mt-2 inline-flex rounded-md border border-emerald-500/20 bg-zinc-900/60 px-3 py-1 text-xs font-medium tracking-wide text-emerald-400/90 backdrop-blur-sm">
             {profileMeta.calibratedLabel}
           </span>
         </div>
 
-        <div className="mx-auto justify-self-center sm:col-start-2">
+        <div className="flex shrink-0 items-center justify-center">
           <FearGreedDial fearAndGreed={fearAndGreed} />
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-3 sm:col-start-3 sm:justify-self-end sm:justify-end">
+        <div className="flex shrink-0 items-center justify-center gap-3">
           <button
             type="button"
             onClick={onOpenSettings}
