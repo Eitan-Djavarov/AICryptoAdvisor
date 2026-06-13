@@ -1,10 +1,11 @@
 import { useState, type FormEvent } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
-
-type AuthTab = 'login' | 'signup';
+import AuthPageHeader from '../components/auth/AuthPageHeader';
+import AuthTabSwitcher, { type AuthTab } from '../components/auth/AuthTabSwitcher';
+import AuthFormFields from '../components/auth/AuthFormFields';
+import AuthFormActions from '../components/auth/AuthFormActions';
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -49,6 +50,13 @@ export default function AuthPage() {
     return null;
   };
 
+  const handleSelectTab = (tab: AuthTab) => {
+    setActiveTab(tab);
+    setError('');
+    setPassword('');
+    setName('');
+  };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError('');
@@ -84,154 +92,31 @@ export default function AuthPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-950 px-6 py-12">
       <div className="w-full max-w-md">
-        <div className="mb-10 text-center">
-          <div className="mx-auto mb-6 flex h-12 w-12 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900">
-            <span className="text-lg font-semibold tracking-tight text-zinc-300">
-              ₿
-            </span>
-          </div>
-          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-            AI Crypto Advisor
-          </p>
-          <h1 className="mt-3 text-2xl font-semibold tracking-tight text-zinc-50 sm:text-3xl">
-            Sign in to your terminal
-          </h1>
-          <p className="mt-3 text-sm text-zinc-500">
-            Institutional-grade crypto intelligence
-          </p>
-        </div>
+        <AuthPageHeader />
 
         <div className="glass-panel overflow-hidden rounded-xl">
-          <div className="grid grid-cols-2 border-b border-zinc-800">
-            <button
-              type="button"
-              onClick={() => {
-                setActiveTab('login');
-                setError('');
-                setPassword('');
-                setName('');
-              }}
-              className={`btn-interactive px-4 py-4 text-sm font-medium transition-all duration-300 ease-out ${
-                activeTab === 'login'
-                  ? 'border-b border-zinc-100 bg-zinc-900 text-zinc-100'
-                  : 'text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300'
-              }`}
-            >
-              Sign In
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setActiveTab('signup');
-                setError('');
-                setPassword('');
-                setName('');
-              }}
-              className={`btn-interactive px-4 py-4 text-sm font-medium transition-all duration-300 ease-out ${
-                activeTab === 'signup'
-                  ? 'border-b border-zinc-100 bg-zinc-900 text-zinc-100'
-                  : 'text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300'
-              }`}
-            >
-              Create Account
-            </button>
-          </div>
+          <AuthTabSwitcher activeTab={activeTab} onSelectTab={handleSelectTab} />
 
           <form onSubmit={handleSubmit} className="space-y-6 p-6 sm:p-8">
-            {activeTab === 'signup' ? (
-              <div>
-                <label
-                  htmlFor="name"
-                  className="mb-2 block text-xs font-medium uppercase tracking-wider text-zinc-500"
-                >
-                  Full Name
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  placeholder="Jane Doe"
-                  className="input-field w-full rounded-lg px-4 py-3 text-sm"
-                  autoComplete="name"
-                />
-              </div>
-            ) : null}
+            <AuthFormFields
+              activeTab={activeTab}
+              name={name}
+              email={email}
+              password={password}
+              showPassword={showPassword}
+              onNameChange={setName}
+              onEmailChange={setEmail}
+              onPasswordChange={setPassword}
+              onToggleShowPassword={() =>
+                setShowPassword((current) => !current)
+              }
+            />
 
-            <div>
-              <label
-                htmlFor="email"
-                className="mb-2 block text-xs font-medium uppercase tracking-wider text-zinc-500"
-              >
-                Email Address
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="you@example.com"
-                className="input-field w-full rounded-lg px-4 py-3 text-sm"
-                autoComplete="email"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="password"
-                className="mb-2 block text-xs font-medium uppercase tracking-wider text-zinc-500"
-              >
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder="Minimum 8 characters"
-                  className="input-field w-full rounded-lg px-4 py-3 pr-11 text-sm"
-                  autoComplete={
-                    activeTab === 'login' ? 'current-password' : 'new-password'
-                  }
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((current) => !current)}
-                  className="absolute inset-y-0 right-0 flex items-center px-3 text-zinc-500 transition-colors hover:text-zinc-300"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" aria-hidden="true" />
-                  ) : (
-                    <Eye className="h-4 w-4" aria-hidden="true" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {error ? (
-              <div className="rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-zinc-300">
-                {error}
-              </div>
-            ) : null}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {loading ? (
-                <>
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-400/30 border-t-zinc-950" />
-                  Please wait...
-                </>
-              ) : activeTab === 'login' ? (
-                'Enter Terminal'
-              ) : (
-                'Create Account'
-              )}
-            </button>
+            <AuthFormActions
+              activeTab={activeTab}
+              loading={loading}
+              error={error}
+            />
           </form>
         </div>
       </div>

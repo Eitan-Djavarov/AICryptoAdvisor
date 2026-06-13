@@ -1,6 +1,7 @@
 import { memo, useCallback, useState } from 'react';
 import FeedbackButtons from './FeedbackButtons';
 import { getInteractionVote } from '../utils/interactions';
+import { displayFormattedValue } from '../utils/display';
 import type { CoinPriceData, FeedbackType } from '../types';
 
 export interface MarketDataSectionProps {
@@ -41,10 +42,10 @@ const CoinPriceRow = memo(function CoinPriceRow({
 
       <div className="shrink-0">
         <p className="font-mono text-sm font-medium tracking-tight text-zinc-100">
-          {coin.formattedCurrentPrice}
+          {displayFormattedValue(coin.formattedCurrentPrice)}
         </p>
         <p className="mt-0.5 text-xs text-zinc-500">
-          MCap {coin.formattedMarketCap}
+          MCap {displayFormattedValue(coin.formattedMarketCap)}
         </p>
       </div>
 
@@ -59,7 +60,9 @@ const CoinPriceRow = memo(function CoinPriceRow({
           }`}
           title="Toggle between percent and fiat change"
         >
-          {showFiatChange ? coin.priceChangeFiat : coin.priceChangePercent}
+          {showFiatChange
+            ? displayFormattedValue(coin.priceChangeFiat)
+            : displayFormattedValue(coin.priceChangePercent)}
         </button>
         <FeedbackButtons
           section="coin_prices"

@@ -1,18 +1,15 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
-import { buildCryptoAssets, splitCryptoAssets } from '../../utils/assets';
+import { buildCryptoAssets } from '../../utils/assets';
 import {
   extractApiErrorMessage,
   extractValidationErrors,
   type ValidationErrors,
 } from '../../utils/validation';
-import type {
-  ContentType,
-  GetOnboardingResponse,
-  InvestorType,
-  UpdateOnboardingResponse,
-} from '../../types';
+import type { UpdateOnboardingResponse } from '../../types';
+import { useSettingsPreferencesLoader } from './useSettingsPreferencesLoader';
+import { useSettingsFormToggles } from './useSettingsFormToggles';
 
 interface UseSettingsFormOptions {
   isOpen: boolean;
@@ -26,74 +23,21 @@ export function useSettingsForm({
   onSaved,
 }: UseSettingsFormOptions) {
   const { setPreferences, updateUser } = useAuth();
-
-  const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
 
-  const [operatorName, setOperatorName] = useState('');
-  const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
-  const [isOtherSelected, setIsOtherSelected] = useState(false);
-  const [customAssets, setCustomAssets] = useState<string[]>([]);
-  const [investorType, setInvestorType] = useState<InvestorType | null>(null);
-  const [selectedContentTypes, setSelectedContentTypes] = useState<ContentType[]>(
-    []
-  );
+  const { loading, error, formState, setFormState, setError } =
+    useSettingsPreferencesLoader(isOpen);
 
-  const populateForm = useCallback(
-    (
-      name: string,
-      cryptoAssets: string[],
-      type: InvestorType,
-      contentTypes: ContentType[]
-    ) => {
-      const { presetSelected, customAssets: parsedCustomAssets } =
-        splitCryptoAssets(cryptoAssets);
-
-      setOperatorName(name);
-      setSelectedAssets(presetSelected);
-      setIsOtherSelected(parsedCustomAssets.length > 0);
-      setCustomAssets(parsedCustomAssets);
-      setInvestorType(type);
-      setSelectedContentTypes(contentTypes);
-    },
-    []
-  );
-
-  const fetchPreferences = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    setSuccessMessage('');
-    setValidationErrors({});
-
-    try {
-      const { data } = await api.get<GetOnboardingResponse>('/onboarding');
-
-      populateForm(
-        data.user.name,
-        data.preferences.cryptoAssets,
-        data.preferences.investorType,
-        data.preferences.contentTypes
-      );
-    } catch (fetchError) {
-      setError(
-        extractApiErrorMessage(
-          fetchError,
-          'Failed to load your settings. Please try again.'
-        )
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [populateForm]);
-
-  useEffect(() => {
-    if (isOpen) {
-      void fetchPreferences();
-    }
-  }, [isOpen, fetchPreferences]);
+  const {
+    toggleAsset,
+    toggleOtherAsset,
+    selectInvestorType,
+    toggleContentType,
+    setOperatorName,
+    setCustomAssets,
+  } = useSettingsFormToggles(setFormState);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -113,35 +57,6 @@ export function useSettingsForm({
     };
   }, [isOpen, onClose]);
 
-  const toggleAsset = useCallback((asset: string) => {
-    setSelectedAssets((current) =>
-      current.includes(asset)
-        ? current.filter((item) => item !== asset)
-        : [...current, asset]
-    );
-  }, []);
-
-  const toggleOtherAsset = useCallback(() => {
-    setIsOtherSelected((current) => {
-      if (current) {
-        setCustomAssets([]);
-      }
-      return !current;
-    });
-  }, []);
-
-  const selectInvestorType = useCallback((type: InvestorType) => {
-    setInvestorType(type);
-  }, []);
-
-  const toggleContentType = useCallback((contentType: ContentType) => {
-    setSelectedContentTypes((current) =>
-      current.includes(contentType)
-        ? current.filter((item) => item !== contentType)
-        : [...current, contentType]
-    );
-  }, []);
-
   const handleSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -150,19 +65,19 @@ export function useSettingsForm({
       setValidationErrors({});
 
       const cryptoAssets = buildCryptoAssets(
-        selectedAssets,
-        isOtherSelected,
-        customAssets
+        formState.selectedAssets,
+        formState.isOtherSelected,
+        formState.customAssets
       );
 
       setSubmitting(true);
 
       try {
         const { data } = await api.put<UpdateOnboardingResponse>('/onboarding', {
-          name: operatorName,
+          name: formState.operatorName,
           cryptoAssets,
-          investorType: investorType ?? '',
-          contentTypes: selectedContentTypes,
+          investorType: formState.investorType ?? '',
+          contentTypes: formState.selectedContentTypes,
         });
 
         setPreferences(data.preferences);
@@ -191,18 +106,7 @@ export function useSettingsForm({
         setSubmitting(false);
       }
     },
-    [
-      selectedAssets,
-      isOtherSelected,
-      customAssets,
-      operatorName,
-      investorType,
-      selectedContentTypes,
-      setPreferences,
-      updateUser,
-      onSaved,
-      onClose,
-    ]
+    [formState, setPreferences, updateUser, onSaved, onClose, setError]
   );
 
   return {
@@ -211,17 +115,17 @@ export function useSettingsForm({
     error,
     successMessage,
     validationErrors,
-    operatorName,
+    operatorName: formState.operatorName,
     setOperatorName,
-    selectedAssets,
+    selectedAssets: formState.selectedAssets,
     toggleAsset,
-    isOtherSelected,
+    isOtherSelected: formState.isOtherSelected,
     toggleOtherAsset,
-    customAssets,
+    customAssets: formState.customAssets,
     setCustomAssets,
-    investorType,
+    investorType: formState.investorType,
     selectInvestorType,
-    selectedContentTypes,
+    selectedContentTypes: formState.selectedContentTypes,
     toggleContentType,
     handleSubmit,
   };

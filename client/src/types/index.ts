@@ -81,6 +81,9 @@ export interface AssetSearchResult {
   name: string;
   price: number;
   change24h: number;
+  formattedPrice: string;
+  formattedChange24h: string;
+  isChangePositive: boolean;
 }
 
 export interface AssetSearchResponse {
@@ -103,6 +106,7 @@ export interface CoinPriceData {
   priceChangePercent: string;
   priceChangeFiat: string;
   isPriceChangePositive: boolean;
+  hasValidPrice: boolean;
 }
 
 export interface CryptoNewsItem {

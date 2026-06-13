@@ -1,29 +1,8 @@
 import type { CoinPriceData } from '../types';
+import { displayFormattedValue } from '../utils/display';
 
 interface TickerMarqueeProps {
   tickers: CoinPriceData[];
-}
-
-function formatMarqueePrice(value: number): string {
-  if (value >= 1) {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: value >= 100 ? 0 : 2,
-    }).format(value);
-  }
-
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 4,
-  }).format(value);
-}
-
-function formatMarqueeChange(value: number): string {
-  const sign = value > 0 ? '+' : '';
-  return `${sign}${value.toFixed(2)}%`;
 }
 
 function scrollToTop(): void {
@@ -31,16 +10,18 @@ function scrollToTop(): void {
 }
 
 function TickerNode({ ticker }: { ticker: CoinPriceData }) {
-  const isPositive = ticker.priceChange24h >= 0;
+  const isPositive = ticker.isPriceChangePositive;
 
   return (
     <span className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap px-6">
       <span className="font-medium tracking-tight text-zinc-300">
         {ticker.symbol}
       </span>
-      <span className="text-zinc-400">{formatMarqueePrice(ticker.currentPrice)}</span>
+      <span className="text-zinc-400">
+        {displayFormattedValue(ticker.formattedCurrentPrice)}
+      </span>
       <span className={isPositive ? 'text-emerald-500' : 'text-rose-500'}>
-        ({formatMarqueeChange(ticker.priceChange24h)})
+        ({displayFormattedValue(ticker.priceChangePercent)})
       </span>
     </span>
   );

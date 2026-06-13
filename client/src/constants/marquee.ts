@@ -23,6 +23,7 @@ export const FALLBACK_MARQUEE_TICKERS: CoinPriceData[] = [
     priceChangePercent: '-1.20%',
     priceChangeFiat: '-$809.04',
     isPriceChangePositive: false,
+    hasValidPrice: true,
   },
   {
     symbol: 'ETH',
@@ -38,6 +39,7 @@ export const FALLBACK_MARQUEE_TICKERS: CoinPriceData[] = [
     priceChangePercent: '+2.40%',
     priceChangeFiat: '+$82.80',
     isPriceChangePositive: true,
+    hasValidPrice: true,
   },
   {
     symbol: 'SOL',
@@ -53,6 +55,7 @@ export const FALLBACK_MARQUEE_TICKERS: CoinPriceData[] = [
     priceChangePercent: '+5.10%',
     priceChangeFiat: '+$7.40',
     isPriceChangePositive: true,
+    hasValidPrice: true,
   },
   {
     symbol: 'BNB',
@@ -68,6 +71,7 @@ export const FALLBACK_MARQUEE_TICKERS: CoinPriceData[] = [
     priceChangePercent: '+0.30%',
     priceChangeFiat: '+$1.74',
     isPriceChangePositive: true,
+    hasValidPrice: true,
   },
   {
     symbol: 'USDT',
@@ -83,5 +87,6 @@ export const FALLBACK_MARQUEE_TICKERS: CoinPriceData[] = [
     priceChangePercent: '+0.01%',
     priceChangeFiat: '+$0.00',
     isPriceChangePositive: true,
+    hasValidPrice: true,
   },
 ];

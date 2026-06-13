@@ -86,6 +86,36 @@ export const FALLBACK_PRICES_RAW: CoinPriceCore[] = [
     currency: 'usd',
     source: 'fallback',
   },
+  {
+    symbol: 'DOGE',
+    name: 'Dogecoin',
+    image: SYMBOL_TO_ICON_IMAGE.DOGE,
+    currentPrice: 0.1523,
+    marketCap: 22_100_000_000,
+    priceChange24h: 2.14,
+    currency: 'usd',
+    source: 'fallback',
+  },
+  {
+    symbol: 'ATOM',
+    name: 'Cosmos',
+    image: SYMBOL_TO_ICON_IMAGE.ATOM,
+    currentPrice: 5.2841,
+    marketCap: 2_050_000_000,
+    priceChange24h: -1.32,
+    currency: 'usd',
+    source: 'fallback',
+  },
+  {
+    symbol: 'NEAR',
+    name: 'NEAR Protocol',
+    image: SYMBOL_TO_ICON_IMAGE.NEAR,
+    currentPrice: 2.4175,
+    marketCap: 2_640_000_000,
+    priceChange24h: 0.87,
+    currency: 'usd',
+    source: 'fallback',
+  },
 ];
 
 export const FALLBACK_PRICES: CoinPriceData[] =

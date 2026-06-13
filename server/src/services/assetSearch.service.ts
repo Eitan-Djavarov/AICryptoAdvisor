@@ -3,6 +3,10 @@ import {
   SEARCHABLE_CRYPTO_ASSETS,
   type SearchableCryptoAsset,
 } from '../constants/searchableAssets';
+import {
+  formatAssetSearchChange,
+  formatAssetSearchPrice,
+} from '../utils/priceFormat';
 import { getDashboardPrices } from './dashboard-cache.service';
 
 export interface AssetSearchResult {
@@ -10,6 +14,9 @@ export interface AssetSearchResult {
   name: string;
   price: number;
   change24h: number;
+  formattedPrice: string;
+  formattedChange24h: string;
+  isChangePositive: boolean;
 }
 
 export function filterSearchableAssets(query: string): SearchableCryptoAsset[] {
@@ -48,12 +55,19 @@ export async function searchCryptoAssets(
 
   return matches.map((asset) => {
     const priceData = priceBySymbol.get(asset.symbol);
+    const price = priceData?.currentPrice ?? Number.NaN;
+    const change24h = priceData?.priceChange24h ?? Number.NaN;
 
     return {
       symbol: asset.symbol,
       name: asset.name,
-      price: priceData?.currentPrice ?? 0,
-      change24h: priceData?.priceChange24h ?? 0,
+      price,
+      change24h,
+      formattedPrice:
+        priceData?.formattedCurrentPrice ?? formatAssetSearchPrice(price),
+      formattedChange24h:
+        priceData?.priceChangePercent ?? formatAssetSearchChange(change24h),
+      isChangePositive: priceData?.isPriceChangePositive ?? change24h >= 0,
     };
   });
 }

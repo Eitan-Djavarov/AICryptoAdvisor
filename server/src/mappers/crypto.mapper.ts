@@ -35,16 +35,20 @@ export const SYMBOL_TO_COINGECKO_ID: Record<string, string> = {
   NEAR: 'near',
   SHIB: 'shiba-inu',
   USDT: 'tether',
-};
+} as const;
+
+export const COINGECKO_ID_TO_SYMBOL: Record<string, string> = Object.fromEntries(
+  Object.entries(SYMBOL_TO_COINGECKO_ID).map(([symbol, id]) => [id, symbol])
+) as Record<string, string>;
 
 export interface CoinGeckoMarketRow {
   id: string;
   symbol: string;
   name: string;
   image: string;
-  current_price: number;
-  market_cap: number;
-  price_change_percentage_24h: number;
+  current_price: number | null;
+  market_cap: number | null;
+  price_change_percentage_24h: number | null;
 }
 
 export interface CryptoPanicPost {
@@ -92,15 +96,16 @@ export function resolveCoinImage(symbol: string, image?: string): string {
 }
 
 export function mapGeckoRowToPrice(row: CoinGeckoMarketRow): CoinPriceData {
-  const symbol = row.symbol.toUpperCase();
+  const symbol =
+    COINGECKO_ID_TO_SYMBOL[row.id] ?? normalizeAssetSymbol(row.symbol);
 
   return enrichCoinPriceData({
     symbol,
     name: row.name,
     image: resolveCoinImage(symbol, row.image),
-    currentPrice: row.current_price,
-    marketCap: row.market_cap,
-    priceChange24h: row.price_change_percentage_24h,
+    currentPrice: row.current_price ?? Number.NaN,
+    marketCap: row.market_cap ?? Number.NaN,
+    priceChange24h: row.price_change_percentage_24h ?? Number.NaN,
     currency: 'usd',
     source: 'live',
   });
@@ -122,9 +127,9 @@ export function buildFallbackPriceRow(symbol: string): CoinPriceData {
     symbol: normalized,
     name: SYMBOL_DISPLAY_NAMES[normalized] ?? normalized,
     image: resolveCoinImage(normalized),
-    currentPrice: 0,
-    marketCap: 0,
-    priceChange24h: 0,
+    currentPrice: Number.NaN,
+    marketCap: Number.NaN,
+    priceChange24h: Number.NaN,
     currency: 'usd',
     source: 'fallback',
   });

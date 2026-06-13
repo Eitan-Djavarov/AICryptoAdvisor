@@ -15,16 +15,45 @@ export interface CoinPriceData extends CoinPriceCore {
   priceChangePercent: string;
   priceChangeFiat: string;
   isPriceChangePositive: boolean;
+  hasValidPrice: boolean;
 }
 
-function formatUsdAmount(
-  value: number,
-  options?: { maximumFractionDigits?: number; minimumFractionDigits?: number }
-): string {
-  const maximumFractionDigits =
-    options?.maximumFractionDigits ?? (value >= 1 ? 2 : 6);
-  const minimumFractionDigits =
-    options?.minimumFractionDigits ?? (value >= 1 ? 2 : 2);
+const MISSING_VALUE = '--';
+
+function isValidPrice(value: number): boolean {
+  return Number.isFinite(value) && value > 0;
+}
+
+function isValidPercent(value: number): boolean {
+  return Number.isFinite(value);
+}
+
+function sanitizeNumber(value: number | null | undefined, fallback = 0): number {
+  if (value == null || !Number.isFinite(value)) {
+    return fallback;
+  }
+
+  return value;
+}
+
+function resolveUsdFractionDigits(value: number): {
+  minimumFractionDigits: number;
+  maximumFractionDigits: number;
+} {
+  if (value < 10) {
+    return { minimumFractionDigits: 4, maximumFractionDigits: 4 };
+  }
+
+  return { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+}
+
+function formatUsdAmount(value: number): string {
+  if (!isValidPrice(value)) {
+    return MISSING_VALUE;
+  }
+
+  const { minimumFractionDigits, maximumFractionDigits } =
+    resolveUsdFractionDigits(value);
 
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -34,21 +63,39 @@ function formatUsdAmount(
   }).format(value);
 }
 
-function formatSignedUsdAmount(value: number): string {
+function formatSignedUsdAmount(value: number, basePrice: number): string {
+  if (!isValidPrice(basePrice) || !isValidPercent(value)) {
+    return MISSING_VALUE;
+  }
+
   if (value === 0) {
-    return formatUsdAmount(0);
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 4,
+      maximumFractionDigits: 4,
+    }).format(0);
   }
 
   const absoluteValue = Math.abs(value);
-  const formatted = formatUsdAmount(absoluteValue, {
-    maximumFractionDigits: absoluteValue >= 1 ? 2 : 6,
-    minimumFractionDigits: absoluteValue >= 1 ? 2 : 2,
-  });
+  const { minimumFractionDigits, maximumFractionDigits } =
+    resolveUsdFractionDigits(absoluteValue);
+
+  const formatted = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits,
+    maximumFractionDigits,
+  }).format(absoluteValue);
 
   return value > 0 ? `+${formatted}` : `-${formatted}`;
 }
 
 function formatMarketCapLabel(marketCap: number): string {
+  if (!isValidPrice(marketCap)) {
+    return MISSING_VALUE;
+  }
+
   if (marketCap >= 1_000_000_000_000) {
     return `$${(marketCap / 1_000_000_000_000).toFixed(2)}T`;
   }
@@ -65,6 +112,10 @@ function formatMarketCapLabel(marketCap: number): string {
 }
 
 function formatPriceChangePercent(changePercent: number): string {
+  if (!isValidPercent(changePercent)) {
+    return MISSING_VALUE;
+  }
+
   if (changePercent === 0) {
     return '0.00%';
   }
@@ -77,18 +128,38 @@ function calculatePriceChangeFiat(
   currentPrice: number,
   changePercent: number
 ): number {
+  if (!isValidPrice(currentPrice) || !isValidPercent(changePercent)) {
+    return Number.NaN;
+  }
+
   return currentPrice * (changePercent / 100);
 }
 
 export function enrichCoinPriceData(row: CoinPriceCore): CoinPriceData {
-  const fiatChange = calculatePriceChangeFiat(row.currentPrice, row.priceChange24h);
+  const currentPrice = sanitizeNumber(row.currentPrice);
+  const marketCap = sanitizeNumber(row.marketCap);
+  const priceChange24h = sanitizeNumber(row.priceChange24h);
+  const hasValidPrice = isValidPrice(currentPrice);
+  const fiatChange = calculatePriceChangeFiat(currentPrice, priceChange24h);
 
   return {
     ...row,
-    formattedCurrentPrice: formatUsdAmount(row.currentPrice),
-    formattedMarketCap: formatMarketCapLabel(row.marketCap),
-    priceChangePercent: formatPriceChangePercent(row.priceChange24h),
-    priceChangeFiat: formatSignedUsdAmount(fiatChange),
-    isPriceChangePositive: row.priceChange24h >= 0,
+    currentPrice,
+    marketCap,
+    priceChange24h,
+    formattedCurrentPrice: formatUsdAmount(currentPrice),
+    formattedMarketCap: formatMarketCapLabel(marketCap),
+    priceChangePercent: formatPriceChangePercent(priceChange24h),
+    priceChangeFiat: formatSignedUsdAmount(fiatChange, currentPrice),
+    isPriceChangePositive: priceChange24h >= 0,
+    hasValidPrice,
   };
+}
+
+export function formatAssetSearchPrice(value: number): string {
+  return formatUsdAmount(sanitizeNumber(value));
+}
+
+export function formatAssetSearchChange(value: number): string {
+  return formatPriceChangePercent(sanitizeNumber(value));
 }
