@@ -1,32 +1,26 @@
-import path from 'path';
 import { PrismaClient } from '@prisma/client';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { PrismaPg } from '@prisma/adapter-pg';
 
 function resolveDatabaseUrl(): string {
-  const databaseUrl = process.env.DATABASE_URL ?? 'file:./dev.db';
+  const databaseUrl = process.env.DATABASE_URL;
 
-  if (!databaseUrl.startsWith('file:')) {
-    return databaseUrl;
+  if (!databaseUrl) {
+    throw new Error(
+      'DATABASE_URL is not defined. Set it to your PostgreSQL connection string.'
+    );
   }
 
-  const filePath = databaseUrl.replace(/^file:/, '');
-  const resolvedPath = path.isAbsolute(filePath)
-    ? filePath
-    : path.resolve(process.cwd(), filePath);
-
-  return `file:${resolvedPath}`;
+  return databaseUrl;
 }
 
-const adapter = new PrismaBetterSqlite3({
-  url: resolveDatabaseUrl(),
-});
+const adapter = new PrismaPg({ connectionString: resolveDatabaseUrl() });
 
 export const prisma = new PrismaClient({ adapter });
 
 export async function connectDB(): Promise<void> {
   try {
     await prisma.$connect();
-    console.log(' SQLite Database via Prisma Connected Successfully');
+    console.log('PostgreSQL database via Prisma connected successfully');
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'Unknown database connection error';
