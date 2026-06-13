@@ -1,5 +1,6 @@
 import { memo, useEffect, useState } from 'react';
 import FeedbackButtons from './FeedbackButtons';
+import type { FeedbackType } from '../types';
 
 interface MemeCardProps {
   id: string;
@@ -7,6 +8,7 @@ interface MemeCardProps {
   title: string;
   source: 'reddit' | 'fallback';
   fallbackQuote: string;
+  initialVote?: FeedbackType | null;
 }
 
 function isLocalMemeAsset(url: string, source: MemeCardProps['source']): boolean {
@@ -19,6 +21,7 @@ function MemeCard({
   title,
   source,
   fallbackQuote,
+  initialVote = null,
 }: MemeCardProps) {
   const [imageFailed, setImageFailed] = useState(false);
   const isFallbackAsset = source === 'fallback';
@@ -45,7 +48,7 @@ function MemeCard({
           </blockquote>
         </div>
         <div className="flex justify-end border-t border-zinc-800 px-4 py-2">
-          <FeedbackButtons section="meme" contentId={id} />
+          <FeedbackButtons section="meme" contentId={id} initialVote={initialVote} />
         </div>
       </div>
     );
@@ -82,7 +85,7 @@ function MemeCard({
           <p className="font-medium tracking-tight text-zinc-200">{title}</p>
           
         </div>
-        <FeedbackButtons section="meme" contentId={id} />
+        <FeedbackButtons section="meme" contentId={id} initialVote={initialVote} />
       </div>
     </div>
   );

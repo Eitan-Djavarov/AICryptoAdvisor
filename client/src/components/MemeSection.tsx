@@ -1,12 +1,14 @@
 import { memo } from 'react';
 import MemeCard from './MemeCard';
-import type { CryptoMemeResult } from '../types';
+import { getInteractionVote } from '../utils/interactions';
+import type { CryptoMemeResult, FeedbackType } from '../types';
 
 export interface MemeSectionProps {
   meme: CryptoMemeResult;
+  interactions: Record<string, FeedbackType>;
 }
 
-function MemeSection({ meme }: MemeSectionProps) {
+function MemeSection({ meme, interactions }: MemeSectionProps) {
   return (
     <>
       <div className="mb-6">
@@ -27,6 +29,7 @@ function MemeSection({ meme }: MemeSectionProps) {
         title={meme.title}
         source={meme.source}
         fallbackQuote={meme.fallbackQuote}
+        initialVote={getInteractionVote(interactions, 'meme', meme.id)}
       />
     </>
   );

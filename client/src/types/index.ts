@@ -19,7 +19,7 @@ export type FeedbackApiSection =
   | 'meme'
   | 'coin_prices';
 
-export type FeedbackType = 'LIKE' | 'DISLIKE';
+export type FeedbackType = 'LIKE' | 'DISLIKE' | 'FAVORITE';
 
 export type DashboardLayoutWidth = 'full' | 'half';
 
@@ -174,6 +174,7 @@ export interface DashboardResponse {
     investorType: InvestorType;
     contentTypes: ContentType[];
   };
+  interactions: Record<string, FeedbackType>;
   layoutSections: DashboardLayoutSection[];
   generatedAt: string;
   message?: string;

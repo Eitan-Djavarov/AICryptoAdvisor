@@ -1,10 +1,11 @@
 import { memo, useState, type MouseEvent } from 'react';
-import { api } from '../services/api';
+import { saveInteraction } from '../services/interactions.service';
 import type { FeedbackApiSection, FeedbackType } from '../types';
 
 interface FeedbackButtonsProps {
   section: FeedbackApiSection;
   contentId: string;
+  initialVote?: FeedbackType | null;
   variant?: 'default' | 'compact';
 }
 
@@ -65,39 +66,28 @@ function DislikeIcon({ compact }: { compact: boolean }) {
   );
 }
 
-async function submitFeedback(
-  section: FeedbackApiSection,
-  contentId: string,
-  type: FeedbackType
-): Promise<void> {
-  try {
-    console.log('Feedback submitted:', { section, contentId, type });
-    await api.post('/feedback', { section, contentId, type });
-  } catch {
-    // Fire-and-forget: no UI state or blocking on failure.
-  }
-}
-
 function FeedbackButtons({
   section,
   contentId,
+  initialVote = null,
   variant = 'default',
 }: FeedbackButtonsProps) {
-  const [activeVote, setActiveVote] = useState<'LIKE' | 'DISLIKE' | null>(null);
+  const [activeVote, setActiveVote] = useState<FeedbackType | null>(initialVote);
 
   const compact = variant === 'compact';
   const gap = compact ? 'gap-1' : 'gap-1.5';
 
-  const handleLikeClick = (event: MouseEvent<HTMLButtonElement>) => {
+  const handleVoteClick = (
+    event: MouseEvent<HTMLButtonElement>,
+    type: 'LIKE' | 'DISLIKE'
+  ) => {
     event.stopPropagation();
-    setActiveVote((current) => (current === 'LIKE' ? null : 'LIKE'));
-    void submitFeedback(section, contentId, 'LIKE');
-  };
 
-  const handleDislikeClick = (event: MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    setActiveVote((current) => (current === 'DISLIKE' ? null : 'DISLIKE'));
-    void submitFeedback(section, contentId, 'DISLIKE');
+    const nextVote = activeVote === type ? null : type;
+    setActiveVote(nextVote);
+    void saveInteraction(section, contentId, type).catch(() => {
+      setActiveVote(initialVote);
+    });
   };
 
   return (
@@ -108,7 +98,7 @@ function FeedbackButtons({
     >
       <button
         type="button"
-        onClick={handleLikeClick}
+        onClick={(event) => handleVoteClick(event, 'LIKE')}
         className={`${BUTTON_SHARED} ${
           activeVote === 'LIKE' ? BUTTON_LIKE_ACTIVE : BUTTON_LIKE_IDLE
         }`}
@@ -120,7 +110,7 @@ function FeedbackButtons({
 
       <button
         type="button"
-        onClick={handleDislikeClick}
+        onClick={(event) => handleVoteClick(event, 'DISLIKE')}
         className={`${BUTTON_SHARED} ${
           activeVote === 'DISLIKE' ? BUTTON_DISLIKE_ACTIVE : BUTTON_DISLIKE_IDLE
         }`}

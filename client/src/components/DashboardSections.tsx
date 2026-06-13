@@ -10,6 +10,7 @@ import type {
   CryptoMemeResult,
   CryptoNewsItem,
   DashboardLayoutSection,
+  FeedbackType,
 } from '../types';
 
 export interface DashboardSectionsProps {
@@ -19,6 +20,7 @@ export interface DashboardSectionsProps {
   aiInsight: AIInsightResult;
   meme: CryptoMemeResult;
   calibratedLabel: string;
+  interactions: Record<string, FeedbackType>;
 }
 
 function DashboardSections({
@@ -28,6 +30,7 @@ function DashboardSections({
   aiInsight,
   meme,
   calibratedLabel,
+  interactions,
 }: DashboardSectionsProps) {
   return (
     <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
@@ -39,18 +42,21 @@ function DashboardSections({
             className={getSectionPanelClass(section.width, section.id)}
           >
             {section.id === 'prices' ? (
-              <MarketDataSection prices={prices} />
+              <MarketDataSection prices={prices} interactions={interactions} />
             ) : null}
             {section.id === 'news' ? (
-              <IntelligenceSection news={news} />
+              <IntelligenceSection news={news} interactions={interactions} />
             ) : null}
             {section.id === 'aiInsight' ? (
               <AIBriefingSection
                 aiInsight={aiInsight}
                 calibratedLabel={calibratedLabel}
+                interactions={interactions}
               />
             ) : null}
-            {section.id === 'meme' ? <MemeSection meme={meme} /> : null}
+            {section.id === 'meme' ? (
+              <MemeSection meme={meme} interactions={interactions} />
+            ) : null}
           </section>
         ))}
     </div>

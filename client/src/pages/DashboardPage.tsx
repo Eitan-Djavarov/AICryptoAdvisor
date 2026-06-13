@@ -73,6 +73,7 @@ export default function DashboardPage() {
             aiInsight={aiInsight}
             meme={meme}
             calibratedLabel={profileMeta.calibratedLabel}
+            interactions={dashboard.interactions}
           />
         </main>
 

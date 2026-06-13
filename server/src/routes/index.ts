@@ -2,14 +2,16 @@ import { Router } from 'express';
 import authRoutes from './auth.routes';
 import onboardingRoutes from './onboarding.routes';
 import assetsRoutes from './assets.routes';
-import dashboardRoutes, { feedbackRouter } from './dashboard.routes';
+import dashboardRoutes from './dashboard.routes';
+import interactionsRoutes from './interactions.routes';
 
 const router = Router();
 
 router.use('/auth', authRoutes);
 router.use('/onboarding', onboardingRoutes);
 router.use('/dashboard', dashboardRoutes);
-router.use('/feedback', feedbackRouter);
+router.use('/interactions', interactionsRoutes);
+router.use('/news', interactionsRoutes);
 router.use('/assets', assetsRoutes);
 
 router.get('/', (_req, res) => {

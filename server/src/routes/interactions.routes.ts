@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { getDashboard } from '../controllers/dashboard.controller';
+import { saveInteraction } from '../controllers/interactions.controller';
 import { authMiddleware } from '../middlewares/auth';
 
 const router = Router();
 
-router.get('/', authMiddleware, getDashboard);
+router.post('/interact', authMiddleware, saveInteraction);
 
 export default router;

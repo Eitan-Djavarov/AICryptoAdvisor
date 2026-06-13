@@ -1,21 +1,25 @@
 import { memo, useCallback, useState } from 'react';
 import FeedbackButtons from './FeedbackButtons';
-import type { CoinPriceData } from '../types';
+import { getInteractionVote } from '../utils/interactions';
+import type { CoinPriceData, FeedbackType } from '../types';
 
 export interface MarketDataSectionProps {
   prices: CoinPriceData[];
+  interactions: Record<string, FeedbackType>;
 }
 
 interface CoinPriceRowProps {
   coin: CoinPriceData;
   showFiatChange: boolean;
   onToggleFiatChange: () => void;
+  initialVote: FeedbackType | null;
 }
 
 const CoinPriceRow = memo(function CoinPriceRow({
   coin,
   showFiatChange,
   onToggleFiatChange,
+  initialVote,
 }: CoinPriceRowProps) {
   return (
     <div className="card-interactive flex items-center justify-start gap-x-6 rounded-lg border border-zinc-800 bg-zinc-950 px-4 py-3">
@@ -60,6 +64,7 @@ const CoinPriceRow = memo(function CoinPriceRow({
         <FeedbackButtons
           section="coin_prices"
           contentId={coin.symbol}
+          initialVote={initialVote}
           variant="compact"
         />
       </div>
@@ -67,7 +72,7 @@ const CoinPriceRow = memo(function CoinPriceRow({
   );
 });
 
-function MarketDataSection({ prices }: MarketDataSectionProps) {
+function MarketDataSection({ prices, interactions }: MarketDataSectionProps) {
   const [showFiatChange, setShowFiatChange] = useState(false);
   const onToggleFiatChange = useCallback(() => {
     setShowFiatChange((current) => !current);
@@ -103,6 +108,11 @@ function MarketDataSection({ prices }: MarketDataSectionProps) {
               coin={coin}
               showFiatChange={showFiatChange}
               onToggleFiatChange={onToggleFiatChange}
+              initialVote={getInteractionVote(
+                interactions,
+                'coin_prices',
+                coin.symbol
+              )}
             />
           ))}
         </div>

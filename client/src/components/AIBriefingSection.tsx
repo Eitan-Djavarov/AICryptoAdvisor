@@ -1,10 +1,12 @@
 import { memo } from 'react';
 import FeedbackButtons from './FeedbackButtons';
-import type { AIInsightResult } from '../types';
+import { getInteractionVote } from '../utils/interactions';
+import type { AIInsightResult, FeedbackType } from '../types';
 
 export interface AIBriefingSectionProps {
   aiInsight: AIInsightResult;
   calibratedLabel: string;
+  interactions: Record<string, FeedbackType>;
 }
 
 function SparklesIcon() {
@@ -23,6 +25,7 @@ function SparklesIcon() {
 function AIBriefingSection({
   aiInsight,
   calibratedLabel,
+  interactions,
 }: AIBriefingSectionProps) {
   return (
     <>
@@ -53,6 +56,11 @@ function AIBriefingSection({
           <FeedbackButtons
             section="ai_insight"
             contentId={aiInsight.contentId}
+            initialVote={getInteractionVote(
+              interactions,
+              'ai_insight',
+              aiInsight.contentId
+            )}
           />
         </div>
       </div>

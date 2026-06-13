@@ -37,5 +37,5 @@ export const FEEDBACK_SECTIONS = [
 ] as const;
 export type FeedbackSection = (typeof FEEDBACK_SECTIONS)[number];
 
-export const FEEDBACK_TYPES = ['LIKE', 'DISLIKE'] as const;
+export const FEEDBACK_TYPES = ['LIKE', 'DISLIKE', 'FAVORITE'] as const;
 export type FeedbackType = (typeof FEEDBACK_TYPES)[number];

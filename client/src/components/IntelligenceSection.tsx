@@ -1,16 +1,19 @@
 import { memo } from 'react';
 import FeedbackButtons from './FeedbackButtons';
-import type { CryptoNewsItem } from '../types';
+import { getInteractionVote } from '../utils/interactions';
+import type { CryptoNewsItem, FeedbackType } from '../types';
 
 export interface IntelligenceSectionProps {
   news: CryptoNewsItem[];
+  interactions: Record<string, FeedbackType>;
 }
 
 interface NewsItemProps {
   item: CryptoNewsItem;
+  initialVote: FeedbackType | null;
 }
 
-const NewsItem = memo(function NewsItem({ item }: NewsItemProps) {
+const NewsItem = memo(function NewsItem({ item, initialVote }: NewsItemProps) {
   return (
     <li className="rounded-lg border border-zinc-800 bg-zinc-950">
       <a
@@ -52,13 +55,17 @@ const NewsItem = memo(function NewsItem({ item }: NewsItemProps) {
             </span>
           ) : null}
         </div>
-        <FeedbackButtons section="market_news" contentId={item.id} />
+        <FeedbackButtons
+          section="market_news"
+          contentId={item.id}
+          initialVote={initialVote}
+        />
       </div>
     </li>
   );
 });
 
-function IntelligenceSection({ news }: IntelligenceSectionProps) {
+function IntelligenceSection({ news, interactions }: IntelligenceSectionProps) {
   return (
     <>
       <div className="mb-4">
@@ -81,7 +88,15 @@ function IntelligenceSection({ news }: IntelligenceSectionProps) {
       ) : (
         <ul className="news-scroll scrollbar-thin space-y-2 pr-1">
           {news.map((item) => (
-            <NewsItem key={item.id} item={item} />
+            <NewsItem
+              key={item.id}
+              item={item}
+              initialVote={getInteractionVote(
+                interactions,
+                'market_news',
+                item.id
+              )}
+            />
           ))}
         </ul>
       )}
