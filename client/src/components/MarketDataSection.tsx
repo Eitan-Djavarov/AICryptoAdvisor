@@ -82,8 +82,8 @@ function MarketDataSection({ prices, interactions }: MarketDataSectionProps) {
   }, []);
 
   return (
-    <>
-      <div className="mb-4">
+    <div className="flex max-h-[580px] min-h-0 flex-col">
+      <div className="mb-4 shrink-0">
         <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
           Market Data
         </p>
@@ -104,7 +104,7 @@ function MarketDataSection({ prices, interactions }: MarketDataSectionProps) {
           No tickers yet — the market&apos;s taking a coffee break.
         </p>
       ) : (
-        <div className="space-y-2">
+        <div className="min-h-0 flex-1 space-y-2 overflow-y-auto overflow-x-hidden pr-2 scrollbar-thin">
           {prices.map((coin) => (
             <CoinPriceRow
               key={`${coin.symbol}-${coin.name}`}
@@ -120,7 +120,7 @@ function MarketDataSection({ prices, interactions }: MarketDataSectionProps) {
           ))}
         </div>
       )}
-    </>
+    </div>
   );
 }
 
