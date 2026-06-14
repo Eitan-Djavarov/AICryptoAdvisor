@@ -11,9 +11,29 @@ const ALLOWED_ORIGINS = [
   process.env.CLIENT_URL,
 ].filter((origin): origin is string => Boolean(origin));
 
+function isAllowedCorsOrigin(origin: string | undefined): boolean {
+  if (!origin) {
+    return true;
+  }
+
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    return true;
+  }
+
+  if (origin.includes('localhost')) {
+    return true;
+  }
+
+  if (origin.includes('vercel.app')) {
+    return true;
+  }
+
+  return false;
+}
+
 const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
-    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+    if (isAllowedCorsOrigin(origin)) {
       callback(null, true);
       return;
     }
