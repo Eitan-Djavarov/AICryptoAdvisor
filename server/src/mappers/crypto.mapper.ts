@@ -50,25 +50,6 @@ export interface CoinGeckoMarketRow {
   price_change_percentage_24h: number | null;
 }
 
-export interface CryptoPanicPost {
-  id: number;
-  title: string;
-  url: string;
-  published_at: string;
-  source?: {
-    title?: string;
-    domain?: string;
-  };
-  metadata?: {
-    description?: string;
-  };
-  currencies?: Array<{ code: string }>;
-}
-
-export interface CryptoPanicResponse {
-  results: CryptoPanicPost[];
-}
-
 export type CryptoNewsItem = EnrichedNewsItem;
 
 export function normalizeAssetSymbol(asset: string): string {
@@ -149,48 +130,6 @@ export function alignPricesToAssets(
     const row = bySymbol.get(normalized);
     return row?.hasValidPrice ? row : buildFallbackPriceRow(normalized);
   });
-}
-
-function truncateSummary(text: string, maxLength = 220): string {
-  const cleaned = text.replace(/\s+/g, ' ').trim();
-  if (cleaned.length <= maxLength) {
-    return cleaned;
-  }
-  return `${cleaned.slice(0, maxLength - 1).trim()}…`;
-}
-
-function buildSummaryFromPost(
-  post: CryptoPanicPost,
-  currencies: string[]
-): string {
-  const description = post.metadata?.description?.trim();
-  if (description) {
-    return truncateSummary(description);
-  }
-
-  const assetLabel =
-    currencies.length > 0 ? currencies.join(', ') : 'crypto markets';
-
-  return `Latest coverage on ${assetLabel}: ${truncateSummary(post.title, 180)}`;
-}
-
-export function mapCryptoPanicPost(post: CryptoPanicPost): NewsItemDraft {
-  const currencies =
-    post.currencies?.map((currency) => currency.code.toUpperCase()) ?? [];
-
-  return {
-    id: String(post.id),
-    title: post.title.trim(),
-    source:
-      post.source?.title?.trim() ||
-      post.source?.domain?.trim() ||
-      'CryptoPanic',
-    time: post.published_at,
-    summary: buildSummaryFromPost(post, currencies),
-    url: post.url,
-    feedSource: 'live',
-    currencies,
-  };
 }
 
 function prioritizeNewsForAssets(

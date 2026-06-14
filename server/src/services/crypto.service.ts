@@ -1,32 +1,19 @@
 import axios, { type AxiosRequestConfig } from 'axios';
-import {
-  MARQUEE_BENCHMARK_ASSETS,
-  type ContentType,
-} from '../constants/domain';
+import { MARQUEE_BENCHMARK_ASSETS } from '../constants/domain';
 import { FALLBACK_PRICES } from '../mocks/crypto.mock';
 import {
   alignPricesToAssets,
-  finalizeNewsList,
-  getFallbackNews,
-  mapCryptoPanicPost,
   mapGeckoRowToPrice,
   normalizeAssetSymbol,
   resolveCoinGeckoIds,
   type CoinGeckoMarketRow,
-  type CryptoNewsItem,
-  type CryptoPanicResponse,
-  NEWS_MAX_ITEMS,
 } from '../mappers/crypto.mapper';
-import { enrichNewsItems } from '../utils/newsFormat';
 import type { CoinPriceData } from '../utils/priceFormat';
 
 export type { CoinPriceData } from '../utils/priceFormat';
-export type { CryptoNewsItem };
 
 const DEFAULT_COINGECKO_BASE = 'https://api.coingecko.com/api/v3';
-const CRYPTOPANIC_BASE = 'https://cryptopanic.com/api/v1';
-const REQUEST_TIMEOUT_MS = 8_000;
-const COINGECKO_MAX_ATTEMPTS = 3;
+const REQUEST_TIMEOUT_MS = 8_000;const COINGECKO_MAX_ATTEMPTS = 3;
 const COINGECKO_RETRY_BASE_DELAY_MS = 500;
 
 const APP_USER_AGENT = 'AICryptoAdvisor/1.0 (+https://github.com/ai-crypto-advisor)';
@@ -213,59 +200,4 @@ export async function fetchCoinPrices(assets: string[]): Promise<CoinPriceData[]
   }
 
   return alignPricesToAssets(normalizedAssets, liveRows);
-}
-
-export async function fetchCryptoNews(
-  contentTypes: ContentType[],
-  assets: string[] = []
-): Promise<CryptoNewsItem[]> {
-  const wantsMarketNews = contentTypes.includes('Market News');
-
-  if (!wantsMarketNews) {
-    return [];
-  }
-
-  const apiKey = process.env.CRYPTOPANIC_API_KEY;
-  const normalizedAssets = assets.map(normalizeAssetSymbol);
-
-  if (!apiKey) {
-    console.warn('[Crypto] CRYPTOPANIC_API_KEY is missing — using fallback news');
-    return getFallbackNews(normalizedAssets);
-  }
-
-  try {
-    const { data } = await axios.get<CryptoPanicResponse>(
-      `${CRYPTOPANIC_BASE}/posts/`,
-      {
-        params: {
-          auth_token: apiKey,
-          public: true,
-          filter: 'hot',
-          ...(normalizedAssets.length > 0 && {
-            currencies: normalizedAssets.join(','),
-          }),
-        },
-        timeout: REQUEST_TIMEOUT_MS,
-        headers: {
-          Accept: 'application/json',
-          'User-Agent': APP_USER_AGENT,
-        },
-      }
-    );
-
-    if (!data.results || data.results.length === 0) {
-      console.warn('[Crypto] CryptoPanic returned no results — using fallback news');
-      return getFallbackNews(normalizedAssets);
-    }
-
-    const liveNews = data.results
-      .slice(0, NEWS_MAX_ITEMS)
-      .map(mapCryptoPanicPost);
-
-    return enrichNewsItems(finalizeNewsList(liveNews, normalizedAssets));
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    console.warn(`[Crypto] CryptoPanic request failed (${message}) — using fallback news`);
-    return getFallbackNews(normalizedAssets);
-  }
 }

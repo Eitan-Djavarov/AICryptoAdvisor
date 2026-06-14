@@ -4,7 +4,7 @@ import { computeDashboardLayoutSections } from '../utils/dashboardLayout';
 import { formatUserInteractions } from '../utils/interactions';
 import { resolveInvestorProfileMeta } from '../utils/investorProfileMeta';
 import { parseStoredPreferences } from '../utils/preferences';
-import { fetchCryptoNews } from '../services/crypto.service';
+import { getFallbackNews } from '../mappers/crypto.mapper';
 import {
   getDashboardAIInsight,
   getDashboardPrices,
@@ -55,10 +55,13 @@ export async function getDashboard(req: Request, res: Response): Promise<void> {
       storedPreferences.contentTypes
     );
 
+    const news = contentTypes.includes('Market News')
+      ? getFallbackNews(cryptoAssets)
+      : [];
+
     const [
       aiInsight,
       prices,
-      news,
       meme,
       marqueeTickers,
       fearAndGreed,
@@ -66,7 +69,6 @@ export async function getDashboard(req: Request, res: Response): Promise<void> {
     ] = await Promise.all([
       getDashboardAIInsight(investorType, cryptoAssets),
       getDashboardPrices(cryptoAssets),
-      fetchCryptoNews(contentTypes, cryptoAssets),
       fetchCryptoMeme(),
       getMarqueeBenchmarkPrices(),
       fetchFearAndGreedIndex(),
