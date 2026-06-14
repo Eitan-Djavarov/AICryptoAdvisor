@@ -92,14 +92,13 @@ export function useCustomAssetSearch({
         .then(({ data }) => {
           setSuggestions(data.results);
         })
-        .catch((error: unknown) => {
+        .catch(() => {
           if (controller.signal.aborted) {
             return;
           }
 
           setSuggestions([]);
           setSearchError('Unable to load asset search results.');
-          console.error('[CustomAssetAutocomplete] search failed:', error);
         })
         .finally(() => {
           if (!controller.signal.aborted) {

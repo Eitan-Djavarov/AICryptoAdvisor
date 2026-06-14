@@ -15,7 +15,6 @@ export const SYMBOL_TO_ICON_IMAGE = {
   DOGE: 'https://assets.coingecko.com/coins/images/5/small/dogecoin.png',
   AVAX: 'https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png',
   DOT: 'https://assets.coingecko.com/coins/images/12171/small/polkadot.png',
-  MATIC: 'https://assets.coingecko.com/coins/images/4713/small/polygon.png',
   LINK: 'https://assets.coingecko.com/coins/images/877/small/chainlink-new-logo.png',
   UNI: 'https://assets.coingecko.com/coins/images/12504/small/uniswap-logo.png',
   ATOM: 'https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png',

@@ -41,5 +41,3 @@ export function setStoredToken(token: string): void {
 export function clearStoredToken(): void {
   localStorage.removeItem(TOKEN_KEY);
 }
-
-export { TOKEN_KEY };

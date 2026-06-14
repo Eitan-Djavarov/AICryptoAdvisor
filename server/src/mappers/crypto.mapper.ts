@@ -27,7 +27,6 @@ export const SYMBOL_TO_COINGECKO_ID: Record<string, string> = {
   DOGE: 'dogecoin',
   AVAX: 'avalanche-2',
   DOT: 'polkadot',
-  MATIC: 'matic-network',
   LINK: 'chainlink',
   UNI: 'uniswap',
   ATOM: 'cosmos',

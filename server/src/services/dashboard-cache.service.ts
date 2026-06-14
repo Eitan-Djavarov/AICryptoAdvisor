@@ -3,11 +3,7 @@ import {
   fetchMarqueeBenchmarkPrices,
   type CoinPriceData,
 } from './crypto.service';
-import {
-  fetchAIInsight,
-  getFallbackAIInsight,
-  type AIInsightResult,
-} from './ai.service';
+import { fetchAIInsight, type AIInsightResult } from './ai.service';
 
 interface CacheEntry<T> {
   data: T;
@@ -52,9 +48,6 @@ function schedulePriceRefresh(key: string, assets: string[]): void {
         expiresAt: Date.now() + PRICE_TTL_MS,
       });
     })
-    .catch((error) => {
-      console.warn('[DashboardCache] Background price refresh failed:', error);
-    })
     .finally(() => {
       priceRefreshInflight.delete(key);
     });
@@ -77,9 +70,6 @@ function scheduleAiRefresh(
         data,
         expiresAt: Date.now() + AI_TTL_MS,
       });
-    })
-    .catch((error) => {
-      console.warn('[DashboardCache] Background AI refresh failed:', error);
     })
     .finally(() => {
       aiRefreshInflight.delete(key);
@@ -167,18 +157,10 @@ export async function getDashboardAIInsight(
     return cached.data;
   }
 
-  try {
-    const data = await fetchAIInsight(investorType, assets);
-    aiCache.set(key, {
-      data,
-      expiresAt: Date.now() + AI_TTL_MS,
-    });
-    return data;
-  } catch (error) {
-    console.warn(
-      '[DashboardCache] Live AI insight fetch failed, using fallback:',
-      error
-    );
-    return getFallbackAIInsight(investorType, assets);
-  }
+  const data = await fetchAIInsight(investorType, assets);
+  aiCache.set(key, {
+    data,
+    expiresAt: Date.now() + AI_TTL_MS,
+  });
+  return data;
 }

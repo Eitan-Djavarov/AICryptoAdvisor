@@ -13,7 +13,6 @@ export const SEARCHABLE_CRYPTO_ASSETS: SearchableCryptoAsset[] = [
   { symbol: 'DOGE', name: 'Dogecoin' },
   { symbol: 'DOT', name: 'Polkadot' },
   { symbol: 'LINK', name: 'Chainlink' },
-  { symbol: 'MATIC', name: 'Polygon' },
   { symbol: 'SHIB', name: 'Shiba Inu' },
   { symbol: 'AVAX', name: 'Avalanche' },
   { symbol: 'ATOM', name: 'Cosmos' },

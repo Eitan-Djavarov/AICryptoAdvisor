@@ -11,7 +11,6 @@ router.use('/auth', authRoutes);
 router.use('/onboarding', onboardingRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/interactions', interactionsRoutes);
-router.use('/news', interactionsRoutes);
 router.use('/assets', assetsRoutes);
 
 router.get('/', (_req, res) => {
