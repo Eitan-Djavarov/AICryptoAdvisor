@@ -147,7 +147,8 @@ export function alignPricesToAssets(
 
   return requestedAssets.map((asset) => {
     const normalized = normalizeAssetSymbol(asset);
-    return bySymbol.get(normalized) ?? buildFallbackPriceRow(normalized);
+    const row = bySymbol.get(normalized);
+    return row?.hasValidPrice ? row : buildFallbackPriceRow(normalized);
   });
 }
 
