@@ -1,6 +1,6 @@
 import type { FeedbackType } from '../constants/domain';
 
-export function buildInteractionKey(
+function buildInteractionKey(
   section: string,
   contentId: string
 ): string {

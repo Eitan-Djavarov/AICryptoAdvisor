@@ -1,19 +1,13 @@
 import { SYSTEM_PROMPT } from '../mocks/ai.mock';
 import {
-  AI_INSIGHT_CONTENT_ID,
   buildLiveAIInsight,
   buildUserPrompt,
   extractMessageContent,
   getFallbackAIInsight,
-  getStaticFallback,
   type AIInsightResult,
 } from '../mappers/ai.mapper';
 
-export {
-  AI_INSIGHT_CONTENT_ID,
-  getStaticFallback,
-  getFallbackAIInsight,
-};
+export { getFallbackAIInsight };
 export type { AIInsightResult };
 
 export async function fetchAIInsight(

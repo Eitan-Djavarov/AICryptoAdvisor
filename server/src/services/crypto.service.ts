@@ -29,7 +29,7 @@ const COINGECKO_BASE =
 const CRYPTOPANIC_BASE = 'https://cryptopanic.com/api/v1';
 const REQUEST_TIMEOUT_MS = 8_000;
 
-export function normalizeMarqueeTickers(prices: CoinPriceData[]): CoinPriceData[] {
+function normalizeMarqueeTickers(prices: CoinPriceData[]): CoinPriceData[] {
   return alignPricesToAssets([...MARQUEE_BENCHMARK_ASSETS], prices);
 }
 

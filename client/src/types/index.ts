@@ -62,9 +62,7 @@ export interface OnboardingResponse {
 
 export interface GetOnboardingResponse {
   success: boolean;
-  preferences: UserPreferences & {
-    suggestedAssets?: string[];
-  };
+  preferences: UserPreferences;
   user: User;
   message?: string;
 }
@@ -79,8 +77,6 @@ export interface UpdateOnboardingResponse {
 export interface AssetSearchResult {
   symbol: string;
   name: string;
-  price: number;
-  change24h: number;
   formattedPrice: string;
   formattedChange24h: string;
   isChangePositive: boolean;
@@ -96,25 +92,17 @@ export interface CoinPriceData {
   symbol: string;
   name: string;
   image: string;
-  currentPrice: number;
-  marketCap: number;
-  priceChange24h: number;
-  currency: 'usd';
-  source: 'live' | 'fallback';
   formattedCurrentPrice: string;
   formattedMarketCap: string;
   priceChangePercent: string;
   priceChangeFiat: string;
   isPriceChangePositive: boolean;
-  hasValidPrice: boolean;
 }
 
 export interface CryptoNewsItem {
   id: string;
   title: string;
-  source: string;
   sourceLabel: string;
-  time: string;
   formattedTime: string;
   summary: string;
   url: string;
@@ -127,7 +115,6 @@ export interface AIInsightResult {
   insight: string;
   model: string;
   source: 'live' | 'fallback';
-  generatedAt: string;
 }
 
 export interface CryptoMemeResult {
@@ -142,14 +129,6 @@ export interface InvestorProfileMeta {
   welcomeMessage: string;
   terminalTitle: string;
   calibratedLabel: string;
-}
-
-export type ValidationErrors = Record<string, string>;
-
-export interface ValidationErrorResponse {
-  success: false;
-  validationErrors: ValidationErrors;
-  message?: string;
 }
 
 export type FearGreedColorType = 'fear' | 'neutral' | 'greed';
@@ -180,21 +159,7 @@ export interface DashboardResponse {
   };
   interactions: Record<string, FeedbackType>;
   layoutSections: DashboardLayoutSection[];
-  generatedAt: string;
   message?: string;
-}
-
-export interface FeedbackResponse {
-  success: boolean;
-  message: string;
-  feedback: {
-    id: string;
-    userId: string;
-    section: FeedbackApiSection;
-    contentId: string;
-    type: FeedbackType;
-    timestamp: string;
-  };
 }
 
 export interface ApiErrorResponse {
