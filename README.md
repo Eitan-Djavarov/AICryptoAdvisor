@@ -8,8 +8,8 @@ A personalized crypto intelligence dashboard built for the **Moveo Coding Task**
 
 | Environment | URL |
 |-------------|-----|
-| **Frontend (Vercel)** | `https://your-app-name.vercel.app` |
-| **Backend (Render)** | `https://your-api-name.onrender.com` |
+| **Frontend (Vercel)** | https://ai-crypto-advisor-client.vercel.app/dashboard|
+| **Backend (Render)** | https://aicryptoadvisor-ib0x.onrender.com |
 
 > Replace the placeholders above with your production deployment URLs after publishing.
 
@@ -39,7 +39,7 @@ This project is a **npm workspaces monorepo** with a decoupled client/server arc
 
 ### High-Level Data Flow
 
-```
+
 React Client (Vercel)
     │
     │  JWT Bearer token
@@ -49,11 +49,9 @@ Express API (Render)  ──►  Neon PostgreSQL
     ├── CoinGecko API      (live crypto prices, 60s cache)
     ├── OpenRouter API     (AI insights, 5min cache)
     └── Local mock layer   (static news, price/news fallbacks, memes)
-```
 
 ### Repository Layout
 
-```
 AICryptoAdvisor/
 ├── client/          # React + Vite frontend
 ├── server/          # Express + Prisma backend
@@ -61,9 +59,9 @@ AICryptoAdvisor/
 │   └── src/         # Routes, controllers, services, mappers
 ├── package.json     # Workspace root scripts
 └── README.md
-```
 
----
+
+
 
 ## 3. Features Implemented
 
@@ -110,18 +108,17 @@ AICryptoAdvisor/
 
 ### 1. Clone the repository
 
-```bash
+bash
 git clone https://github.com/Eitan-Djavarov/AICryptoAdvisor.git
 cd AICryptoAdvisor
-```
 
 ### 2. Install dependencies
 
 From the **repository root** (installs both workspaces via npm workspaces):
 
-```bash
+
 npm install
-```
+
 
 ### 3. Configure environment variables
 
@@ -129,9 +126,8 @@ npm install
 
 Copy the example file and fill in your values:
 
-```bash
 cp server/.env.example server/.env
-```
+
 
 | Variable | Description |
 |----------|-------------|
@@ -147,9 +143,8 @@ cp server/.env.example server/.env
 
 #### Client — `client/.env`
 
-```bash
 cp client/.env.example client/.env
-```
+
 
 | Variable | Description |
 |----------|-------------|
@@ -157,19 +152,17 @@ cp client/.env.example client/.env
 
 ### 4. Run database migrations
 
-```bash
 cd server
 npx prisma migrate deploy
 cd ..
-```
+
 
 For a fresh local database during development, you may alternatively use:
 
-```bash
 cd server
 npx prisma migrate dev
 cd ..
-```
+
 
 ### 5. Start development servers
 
@@ -177,21 +170,20 @@ Open **two terminals** from the repository root:
 
 **Terminal 1 — API server (port 5000):**
 
-```bash
 npm run dev:server
-```
+
 
 **Terminal 2 — React client (port 5173):**
 
-```bash
+
 npm run dev:client
-```
+
 
 Visit **http://localhost:5173**, register an account, and complete onboarding.
 
 ### 6. Production builds (optional)
 
-```bash
+
 # Build both workspaces
 npm run build
 
@@ -201,7 +193,7 @@ npm run build:client
 
 # Start compiled API
 npm run start
-```
+
 
 ### Deployment Notes
 
@@ -214,43 +206,26 @@ Set `VITE_API_BASE_URL` in Vercel to your Render API URL (e.g. `https://your-api
 
 ---
 
-## 5. AI Collaboration & Thinking Process Summary
+## 5. AI Collaboration Summary
 
-This project was engineered iteratively with **Cursor** as an AI pair-programming partner, following a disciplined build → audit → harden → deploy lifecycle.
+This project was built iteratively utilizing **Cursor** as an AI assistant to streamline development, focusing on frontend polish and efficient database management:
 
-### Architecture & Data-Flow Audits
-We ran full-stack audits tracing the path from Neon `UserPreferences` through Express controllers, in-memory caches, and CoinGecko/OpenRouter integrations to React hooks and dashboard components. These audits surfaced monorepo deployment misconfigurations (Vercel root directory, missing `VITE_API_BASE_URL`), schema/documentation drift (SQLite comments vs PostgreSQL reality), and stale-while-revalidate TTL documentation.
+* **UI/UX & Responsive Design:** Assisted in building a clean, modern dashboard interface using Tailwind CSS. AI helped ensure a responsive grid layout where all widgets align perfectly, adapt to mobile screens, and handle loading states smoothly.
+* **Database Queries & Relations:** Collaborated on writing optimized Prisma queries to handle explicit relational data in PostgreSQL. This includes managing complex user preferences and implementing upsert logic for the interactive feedback system (locking one vote per user per widget).
+* **Code Maintenance:** Used AI to systematically clean up unused code, dead functions, and old logs, ensuring a 100% clean TypeScript build with 0 compilation errors.
 
-### Tier 1 Code Cleanup
-A targeted technical-debt pass removed:
-- Dead route aliases (`/api/news` duplicate of `/interactions`)
-- Redundant `.catch()` blocks on services that never throw
-- Unreachable `try/catch` around `fetchAIInsight` (the AI service already returns fallback inline)
-- Unused exports (`validateCryptoAssetSelection`, public `TOKEN_KEY` re-export)
-- Stale favicon reference (`/vite.svg` → `/favicon.svg`)
-
-This reduced noise, tightened the public API surface, and eliminated dead promise chains that could mask real failures.
-
-### CORS & Deployment Debugging
-Production initially failed when Vercel generated new preview URLs not whitelisted on Render. We implemented dynamic CORS in `server/src/app.ts` to allow all `*.vercel.app` origins and `localhost` dev ports, while preserving explicit production domain allowlisting. Combined with correct monorepo build settings (`client` root, `dist` output), this closed the local/production symmetry gap.
-
-### Performance: Replacing CryptoPanic with Local News
-An audit revealed CryptoPanic added an external HTTP round-trip on **every** dashboard load with **zero server-side caching**. We removed the integration entirely and serve static `FALLBACK_NEWS` through `getFallbackNews()`, which filters and prioritizes headlines by the user's watchlist in-process.
-
-**Result:** the news slice of the dashboard response is resolved synchronously from memory—no network latency, no API-key dependency—contributing to sub-50ms dashboard payload assembly for the news segment (the overall dashboard still awaits parallel price/AI/meme fetches).
-
-### CoinGecko Hardening
-We added `resolveCoinGeckoConfig()` to detect malformed base URLs (including API keys accidentally placed in `COINGECKO_API_BASE`), wired `x-cg-demo-api-key` headers, implemented 3-attempt exponential backoff for 429/network errors, and fixed `alignPricesToAssets` to prefer mock fallbacks over invalid live rows displaying `--`.
-
+* **UI/UX & Responsive Design:** Assisted in building a clean, modern dashboard interface using Tailwind CSS. AI helped ensure a responsive grid layout where all widgets align perfectly, adapt to mobile screens, and handle loading states smoothly.
+* **Database Queries & Relations:** Collaborated on writing optimized Prisma queries to handle explicit relational data in PostgreSQL. This includes managing complex user preferences and implementing upsert logic for the interactive feedback system (locking one vote per user per widget).
+* **Code Maintenance:** Used AI to systematically clean up unused code, dead functions, and old logs, ensuring a 100% clean TypeScript build with 0 compilation errors.
 ---
 
-## 6. 🎁 Bonus — Future Model Improvements & Training Process
+## 6.  Bonus — Future Model Improvements & Training Process
 
 The `Feedback` table is not merely a UX affordance—it is a **structured preference signal** that can power the next generation of personalized crypto intelligence.
 
 ### Schema Recap
 
-```prisma
+prisma
 model Feedback {
   userId      String
   sectionName String   // ai_insight | market_news | coin_prices | meme
@@ -258,7 +233,7 @@ model Feedback {
   vote        String   // LIKE | DISLIKE | FAVORITE
   @@unique([userId, sectionName, contentId])
 }
-```
+
 
 Each row is a labeled interaction: *user U expressed preference P over content item I in section S*.
 
@@ -315,8 +290,4 @@ Use \( w_s \) to dynamically:
 
 Over time, the dashboard becomes a **closed-loop personalization system**: feedback → training data → better models → higher satisfaction → richer feedback.
 
----
 
-## License
-
-Private — Moveo Coding Task submission.
