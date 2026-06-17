@@ -26,5 +26,3 @@ build/
 **/.DS_Store
 
 # Cursor IDE settings
-.cursorrules
-.cursor/
