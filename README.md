@@ -1,9 +1,5 @@
 # AI Crypto Advisor
 
-A personalized crypto intelligence dashboard built for the **Moveo Coding Task**. Users authenticate, complete a multi-step onboarding flow, and receive a tailored terminal with live market prices, static curated news, AI briefings, memes, and interactive feedback across every widget.
-
----
-
 ## 1. Project Title & Live Links
 
 | Environment | URL |
@@ -205,89 +201,4 @@ npm run start
 Set `VITE_API_BASE_URL` in Vercel to your Render API URL (e.g. `https://your-api.onrender.com/api`). Set `DATABASE_URL`, `JWT_SECRET`, and AI/CoinGecko keys in Render environment variables.
 
 ---
-
-## 5. AI Collaboration Summary
-
-This project was built iteratively utilizing **Cursor** as an AI assistant to streamline development, focusing on frontend polish and efficient database management:
-
-* **UI/UX & Responsive Design:** Assisted in building a clean, modern dashboard interface using Tailwind CSS. AI helped ensure a responsive grid layout where all widgets align perfectly, adapt to mobile screens, and handle loading states smoothly.
-* **Database Queries & Relations:** Collaborated on writing optimized Prisma queries to handle explicit relational data in PostgreSQL. This includes managing complex user preferences and implementing upsert logic for the interactive feedback system (locking one vote per user per widget).
-* **Code Maintenance:** Used AI to systematically clean up unused code, dead functions, and old logs, ensuring a 100% clean TypeScript build with 0 compilation errors.
-
-* **UI/UX & Responsive Design:** Assisted in building a clean, modern dashboard interface using Tailwind CSS. AI helped ensure a responsive grid layout where all widgets align perfectly, adapt to mobile screens, and handle loading states smoothly.
-* **Database Queries & Relations:** Collaborated on writing optimized Prisma queries to handle explicit relational data in PostgreSQL. This includes managing complex user preferences and implementing upsert logic for the interactive feedback system (locking one vote per user per widget).
-* **Code Maintenance:** Used AI to systematically clean up unused code, dead functions, and old logs, ensuring a 100% clean TypeScript build with 0 compilation errors.
----
-
-## 6.  Bonus — Future Model Improvements & Training Process
-
-The `Feedback` table is not merely a UX affordance—it is a **structured preference signal** that can power the next generation of personalized crypto intelligence.
-
-### Schema Recap
-
-prisma
-model Feedback {
-  userId      String
-  sectionName String   // ai_insight | market_news | coin_prices | meme
-  contentId   String   // insight ID, news ID, coin symbol, meme ID
-  vote        String   // LIKE | DISLIKE | FAVORITE
-  @@unique([userId, sectionName, contentId])
-}
-
-
-Each row is a labeled interaction: *user U expressed preference P over content item I in section S*.
-
-### A. Collaborative Filtering & Recommendation
-
-Construct a **User–Item interaction matrix** \( R \in \{-1, 0, +1\}^{|U| \times |I|} \) where:
-
-- \( R_{u,i} = +1 \) for `LIKE`
-- \( R_{u,i} = -1 \) for `DISLIKE`
-- \( R_{u,i} = 0 \) for no interaction
-
-Jointly factorize \( R \approx U \cdot V^\top \) (matrix factorization) or train a neural collaborative filter to recommend:
-- News articles similar to those a HODLer cohort upvoted
-- Meme styles preferred by Day Traders
-- Asset combinations that co-occur in high-satisfaction watchlists
-
-Cold-start users inherit priors from their `investorType` cluster before accumulating personal feedback.
-
-### B. LLM Alignment via Preference Optimization
-
-Aggregate feedback into a structured dataset:
-
-\[
-\mathcal{D} = \{(x, y_w, y_l)\}
-\]
-
-where:
-- \( x \) = prompt context (investor archetype, watchlist, market snapshot)
-- \( y_w \) = the AI insight (or content variant) the user **liked**
-- \( y_l \) = the rejected alternative (prior insight, generic fallback, or a sampled negative)
-
-**Direct Preference Optimization (DPO)** trains a policy \( \pi_\theta \) to maximize:
-
-\[
-\mathcal{L}_{\text{DPO}} = -\mathbb{E}_{(x, y_w, y_l) \sim \mathcal{D}} \left[ \log \sigma \left( \beta \log \frac{\pi_\theta(y_w \mid x)}{\pi_{\text{ref}}(y_w \mid x)} - \beta \log \frac{\pi_\theta(y_l \mid x)}{\pi_{\text{ref}}(y_l \mid x)} \right) \right]
-\]
-
-This aligns briefing tone, risk framing, and asset emphasis with **HODLer** (long-horizon, accumulation) vs **Day Trader** (momentum, volatility) archetypes without explicit rule engines.
-
-Alternatively, a classical **RLHF** pipeline—reward model trained on pairwise votes, followed by PPO fine-tuning—scales to multi-section feedback (news summaries, meme selection, price commentary).
-
-### C. Adaptive UI via Negative-Feedback Weights
-
-Maintain a per-section **dissatisfaction score** for each user:
-
-\[
-w_s = \frac{\text{dislikes}_s}{\text{dislikes}_s + \text{likes}_s + \epsilon}
-\]
-
-Use \( w_s \) to dynamically:
-- Deprioritize sections in `layoutSections` ordering (e.g., shrink meme panel if \( w_{\text{meme}} > 0.6 \))
-- Suppress content IDs with repeated dislikes across sessions
-- Trigger A/B layout experiments only for users with high engagement but mixed sentiment
-
-Over time, the dashboard becomes a **closed-loop personalization system**: feedback → training data → better models → higher satisfaction → richer feedback.
-
 
